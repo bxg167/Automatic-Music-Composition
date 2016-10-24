@@ -1,32 +1,34 @@
 from tkinter import *
+from GUI.ActionButtons import ActionButtons
+from GUI.ProgressBar import ProgressBar
+from GUI.PathEntry import PathEntry
+
 import time
 
-from ActionButtons import ActionButtons
-from PathEntry import PathEntry
-from ProgressBar import ProgressBar
+MIN_HEIGHT = 125
+MIN_WIDTH = 260
 
 window = Tk()
+window.geometry("440x" + str(MIN_HEIGHT))
+window.minsize(width=MIN_WIDTH, height=MIN_HEIGHT)
 window.resizable(width=TRUE, height=FALSE)
-folderLocation = ""
-window.geometry("440x125")
 
-pathEntryFrame = Frame(window)
-label = Label(pathEntryFrame, text="Folder")
+pathEntry = PathEntry(window)
+
+label = Label(pathEntry, text="Folder")
 label.pack(side=LEFT)
 
-PathEntry(pathEntryFrame)
-pathEntryFrame.pack(fill=X, expand=YES, padx=10, pady=10)
+pathEntry.pack(fill=X, expand=YES, padx=10, pady=10)
 
 label = Label(window)
 label.pack(padx=10, anchor=W)
 
-progressBarFrame = Frame(window)
-progressBar = ProgressBar(progressBarFrame)
-progressBarFrame.pack(fill=X, expand=YES, padx=10)
+progressBar = ProgressBar(window)
+progressBar.pack(fill=X, expand=YES, padx=10)
 
-actionButtonsFrame = Frame(window)
-actionButtons = ActionButtons(actionButtonsFrame)
-actionButtonsFrame.pack(fill=X, padx=5)
+actionButtons = ActionButtons(window)
+actionButtons.pack(fill=X, padx=5)
+
 
 def run():
     actionButtons.set_running()

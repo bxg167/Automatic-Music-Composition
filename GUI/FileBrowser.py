@@ -4,7 +4,10 @@ import tkinter
 
 top = Tk()
 
-menu = Listbox(top, height=10, width=50, selectmode=tkinter.SINGLE, yscrollcommand=True)
+menu = Listbox(top, height=10, width=50, selectmode=tkinter.SINGLE)
+scrollbar = Scrollbar(menu, orient=VERTICAL)
+menu.configure(yscrollcommand=scrollbar)
+scrollbar.config(command=menu.yview)
 
 i = 0
 dir = "C:/users/bryce/videos"

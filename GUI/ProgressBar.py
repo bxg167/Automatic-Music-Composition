@@ -1,9 +1,11 @@
 from tkinter import *
 
 
-class ProgressBar:
+class ProgressBar(Frame):
     def __init__(self, master):
-        progressbar_background = Frame(master, bg="Grey")
+        Frame.__init__(self, master)
+
+        progressbar_background = Frame(self, bg="Grey")
 
         self.progressbar = progressbar_background
 
@@ -11,7 +13,6 @@ class ProgressBar:
 
         self.bar.pack(anchor=W, side=TOP)
         progressbar_background.pack(fill=X, expand=YES)
-
 
     def set_percentage(self, percentage):
         if 0 <= percentage <= 100:
