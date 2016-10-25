@@ -1,3 +1,4 @@
+from queue import Queue
 from tkinter import *
 from GUI.ActionButtons import ActionButtons
 from GUI.PopUp import PopUp
@@ -16,46 +17,57 @@ window.geometry("440x" + str(MIN_HEIGHT))
 window.minsize(width=MIN_WIDTH, height=MIN_HEIGHT)
 window.resizable(width=TRUE, height=FALSE)
 
-pathEntry = PathEntry(window)
+path_entry = PathEntry(window)
 
-label = Label(pathEntry, text="Folder")
+label = Label(path_entry, text="Folder")
 label.pack(side=LEFT)
 
-pathEntry.pack(fill=X, expand=YES, padx=10, pady=10)
+path_entry.pack(fill=X, expand=YES, padx=10, pady=10)
 
 label = Label(window)
 label.pack(padx=10, anchor=W)
 
-progressBar = ProgressBar(window)
-progressBar.pack(fill=X, expand=YES, padx=10)
+progress_bar = ProgressBar(window)
+progress_bar.pack(fill=X, expand=YES, padx=10)
 
-actionButtons = ActionButtons(window)
-actionButtons.pack(fill=X, padx=5)
+action_buttons = ActionButtons(window)
+action_buttons.pack(fill=X, padx=5)
 
 
 def run():
-    if os.path.isdir(pathEntry.field.get()):
-        actionButtons.set_running()
+    folder_dir = path_entry.field.get()
+    if not os.path.isdir(folder_dir):
+        pop_up = PopUp("Not a valid directory")
+        pop_up.grab_set()
+        pop_up.mainloop()
+        return
 
-        # Change with file name
-        label.configure(text="Running")
+    action_buttons.set_running()
 
-        i = 0
-        while actionButtons.is_running() and i < 100:
-            i += 1
-            progressBar.set_percentage(i)
-            time.sleep(1 / 10)
-        if actionButtons.is_running():
-            label.config(text="Finished")
-        actionButtons.set_not_running()
-    else:
-        PopUp("Not a valid directory")
+    file_queue = Queue(False)
+    for name in os.listdir(folder_dir):
+        path = os.path.join(folder_dir, name)
+        if os.path.isfile(path) and name.endswith(".midi"):
+            print(name)
+            file_queue.put(name)
+
+    i = 0
+    max_size = file_queue.qsize()
+    while action_buttons.is_running and max_size > i:
+        label.config(text="Current File: " + file_queue.get(False))
+        progress_bar.set_percentage(i / (max_size + 1))
+        i += 1
+        time.sleep(1)
+    if action_buttons.is_running:
+        progress_bar.set_percentage(1)
+        label.config(text="Finished")
+    action_buttons.set_not_running()
 
 
 def stop():
-    actionButtons.set_not_running()
+    action_buttons.set_not_running()
     label.configure(text="Cancelled")
 
-actionButtons.configure(run=run, stop=stop)
+action_buttons.configure(run=run, stop=stop)
 
 window.mainloop()

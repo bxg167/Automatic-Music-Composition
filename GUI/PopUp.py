@@ -1,18 +1,16 @@
 from tkinter import *
 
 
-class PopUp:
+class PopUp(Toplevel):
     def __init__(self, text):
-        popUp = Toplevel()
-        popUp.resizable(width=FALSE, height=FALSE)
-        popUp.minsize(width=120, height=30)
+        Toplevel.__init__(self)
+        self.resizable(width=FALSE, height=FALSE)
+        self.minsize(width=180, height=80)
 
-        label = Label(popUp, text=text)
-        label.pack()
+        label = Label(self, text=text, justify=CENTER, height=4)
+        label.pack(fill=X)
 
-        button = Button(popUp, text="Ok", command=popUp.destroy, width=6)
-        button.pack()
+        button = Button(self, text="Ok", command=self.destroy, padx=10)
+        button.pack(pady=5)
 
-        popUp.focus_force()
-
-        popUp.wait_window(popUp)
+        self.focus_force()

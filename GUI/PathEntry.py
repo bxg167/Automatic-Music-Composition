@@ -13,15 +13,12 @@ class PathEntry(Frame):
         self.field = Entry(self)
         self.field.pack(fill=X, padx=5, expand=YES, side=RIGHT)
 
-
     def open_explorer(self):
-        explorer = Tk()
-        browser = FolderBrowser(explorer)
-        browser.pack()
-
-        explorer.wait_window()
-
+        browser = FolderBrowser()
+        browser.grab_set()
+        browser.wait_window()
+        print(browser.chosen_directory)
+        print("done")
         if browser.chosen_directory != "":
             self.field.delete(0, END)
             self.field.insert(0, browser.chosen_directory)
-

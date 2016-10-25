@@ -5,9 +5,9 @@ class ProgressBar(Frame):
     def __init__(self, master):
         Frame.__init__(self, master)
 
-        progressbar_background = Frame(self, bg="Grey")
+        progressbar_background = Frame(self, bg="Grey", relief=SUNKEN)
 
-        self.progressbar = progressbar_background
+        self.progress_bar = progressbar_background
 
         self.bar = Frame(progressbar_background, bg="green", width=0, height=20)
 
@@ -15,6 +15,6 @@ class ProgressBar(Frame):
         progressbar_background.pack(fill=X, expand=YES)
 
     def set_percentage(self, percentage):
-        if 0 <= percentage <= 100:
-            self.bar.configure(width=percentage / 100 * self.progressbar.winfo_width())
-        self.progressbar.update()
+        if 0 <= percentage <= 1:
+            self.bar.configure(width=percentage * self.progress_bar.winfo_width())
+        self.progress_bar.update()

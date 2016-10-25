@@ -3,14 +3,15 @@ import os
 import tkinter
 
 
-class FolderBrowser(Frame):
-    def __init__(self, master):
-        Frame.__init__(self, master)
+class FolderBrowser(Toplevel):
+    def __init__(self,):
+        Toplevel.__init__(self)
 
         self.chosen_directory = ""
-        menuframe = Frame(self)
-        self.menu = Listbox(menuframe, height=10, width=50, selectmode=tkinter.SINGLE)
-        self.scrollbar = Scrollbar(menuframe, orient=VERTICAL)
+        menu_frame = Frame(self)
+        self.minsize(width=220, height=200)
+        self.menu = Listbox(menu_frame, height=10, width=30, selectmode=tkinter.SINGLE)
+        self.scrollbar = Scrollbar(menu_frame, orient=VERTICAL)
 
         self.menu.configure(yscrollcommand=self.scrollbar.set)
         self.scrollbar.configure(command=self.menu.yview)
@@ -19,34 +20,34 @@ class FolderBrowser(Frame):
         self.menu.pack(fill=BOTH, expand=YES, side=LEFT)
         self.scrollbar.pack(fill=Y, expand=YES)
 
-        menuframe.pack(fill=BOTH, expand=YES)
+        menu_frame.pack(fill=BOTH, expand=YES)
 
-        button = Button(self, text="Select", width=8, command=self.make_selection)
-        button.pack(side=RIGHT, padx=5)
+        select_button = Button(self, text="Select", width=8, command=self.make_selection)
+        select_button.pack(side=RIGHT, padx=5, pady=5)
 
-        button = Button(self, text="Browse", width=8)
-        button.pack(side=RIGHT, padx=5)
-        button.bind("<Button-1>", self.explore_folder)
+        browse_button = Button(self, text="Browse", width=8)
+        browse_button.pack(side=RIGHT, padx=5, pady=5)
+        browse_button.bind("<Button-1>", self.explore_folder)
 
-        self.workingDirectory = "."
-        self.fill(self.workingDirectory)
+        self.working_directory = "."
+        self.fill(self.working_directory)
 
     def make_selection(self):
-        self.chosen_directory = os.path.abspath(os.path.join(self.workingDirectory, self.menu.selection_get()))
-        self.master.destroy()
+        self.chosen_directory = os.path.abspath(os.path.join(self.working_directory, self.menu.selection_get()))
+        self.destroy()
 
     def explore_folder(self, event):
-        self.workingDirectory = os.path.abspath(os.path.join(self.workingDirectory, self.menu.selection_get()))
-        print(self.workingDirectory)
-        self.fill(self.workingDirectory)
+        self.working_directory = os.path.abspath(os.path.join(self.working_directory, self.menu.selection_get()))
+        print(self.working_directory)
+        self.fill(self.working_directory)
 
-    def fill(self, folderDir):
+    def fill(self, folder_dir):
         self.menu.delete(0, END)
 
         i = 1
         self.menu.insert(0, "..")
-        for name in os.listdir(folderDir):
-            if os.path.isdir(os.path.join(folderDir, name)):
+        for name in os.listdir(folder_dir):
+            if os.path.isdir(os.path.join(folder_dir, name)):
                 self.menu.insert(i, name)
                 i += 1
             # Will be used if I decide to make this a folder & file browser (Possibly for an advanced window)
