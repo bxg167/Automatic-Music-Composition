@@ -1,14 +1,17 @@
 from tkinter import *
 from GUI.ActionButtons import ActionButtons
+from GUI.PopUp import PopUp
 from GUI.ProgressBar import ProgressBar
 from GUI.PathEntry import PathEntry
 
 import time
+import os
 
 MIN_HEIGHT = 125
 MIN_WIDTH = 260
 
 window = Tk()
+
 window.geometry("440x" + str(MIN_HEIGHT))
 window.minsize(width=MIN_WIDTH, height=MIN_HEIGHT)
 window.resizable(width=TRUE, height=FALSE)
@@ -31,19 +34,22 @@ actionButtons.pack(fill=X, padx=5)
 
 
 def run():
-    actionButtons.set_running()
+    if os.path.isdir(pathEntry.field.get()):
+        actionButtons.set_running()
 
-    # Change with file name
-    label.configure(text="Running")
+        # Change with file name
+        label.configure(text="Running")
 
-    i = 0
-    while actionButtons.is_running() and i < 100:
-        i += 1
-        progressBar.set_percentage(i)
-        time.sleep(1 / 10)
-    if actionButtons.is_running():
-        label.config(text="Finished")
-    actionButtons.set_not_running()
+        i = 0
+        while actionButtons.is_running() and i < 100:
+            i += 1
+            progressBar.set_percentage(i)
+            time.sleep(1 / 10)
+        if actionButtons.is_running():
+            label.config(text="Finished")
+        actionButtons.set_not_running()
+    else:
+        PopUp("Not a valid directory")
 
 
 def stop():
