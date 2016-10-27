@@ -1,6 +1,6 @@
-from tkinter import *
+from Tkinter import *
 
-from GUI.FolderBrowser import FolderBrowser
+from FolderBrowser import FolderBrowser
 
 
 class PathEntry(Frame):

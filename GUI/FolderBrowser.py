@@ -1,6 +1,5 @@
-from tkinter import *
+from Tkinter import *
 import os
-import tkinter
 
 
 class FolderBrowser(Toplevel):
@@ -10,7 +9,7 @@ class FolderBrowser(Toplevel):
         self.chosen_directory = ""
         menu_frame = Frame(self)
         self.minsize(width=220, height=200)
-        self.menu = Listbox(menu_frame, height=10, width=30, selectmode=tkinter.SINGLE)
+        self.menu = Listbox(menu_frame, height=10, width=30, selectmode=SINGLE)
         self.scrollbar = Scrollbar(menu_frame, orient=VERTICAL)
 
         self.menu.configure(yscrollcommand=self.scrollbar.set)
