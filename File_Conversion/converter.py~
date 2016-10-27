@@ -2,7 +2,7 @@ import pickle
 import array
 from TimeSlice import TimeSlice
 from RCFF import RCFF
-import midi
+#import midi
 
 class converter():
 	def _init_(self, midi_file):
