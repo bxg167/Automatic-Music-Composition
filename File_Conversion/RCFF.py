@@ -2,7 +2,7 @@ from TimeSlice import TimeSlice
 
 class RCFF(): 
 	
-	def _init_(self, midi_file, tempo, instrument): 
+	def __init__(self, midi_file, tempo, instrument): 
 		self.midi_file=midi_file
 		self.tempo=tempo
 		self.instrument=instrument
