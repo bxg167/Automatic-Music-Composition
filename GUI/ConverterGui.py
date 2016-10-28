@@ -13,8 +13,8 @@ MIN_WIDTH = 260
 
 window = Tk()
 
-window.geometry("440x" + str(MIN_HEIGHT))
 window.minsize(width=MIN_WIDTH, height=MIN_HEIGHT)
+window.geometry("440x" + str(MIN_HEIGHT))
 window.resizable(width=TRUE, height=FALSE)
 
 path_entry = PathEntry(window)
