@@ -1,4 +1,5 @@
 import os
+from types import NoneType
 from unittest import TestCase
 
 import midi
@@ -30,22 +31,3 @@ class TestConverter(TestCase):
 
         for i in range(1, length):
             self.assertEqual(0, rcff.body[i].message)
-
-    def test_create_rcff_file_with_no_useful_info(self):
-        c = Converter(os.path.abspath(os.path.join("./", "mary.mid")))
-        # rcff = c.pattern
-        #
-        # rcff = Converter.create_rcff_file(pattern[1])
-        # self.assertTrue(NoneType, rcff)
-
-    def test_extract_data_from_file_with_no_useful_info(self):
-        pattern = midi.read_midifile(os.path.abspath(os.path.join("./", "mary.mid")))
-
-        self.assertEquals(2, len(pattern))
-
-        instrument, tempo, notes = Converter.extract_data(pattern[0])
-        self.assertEquals(-1, instrument)
-        self.assertEquals(0, tempo)
-        self.assertEquals(0, len(notes))
-
-        self.assertRaises(RuntimeError, Converter.extract_data, pattern[1])

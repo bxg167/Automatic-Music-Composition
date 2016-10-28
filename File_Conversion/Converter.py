@@ -17,19 +17,17 @@ class Converter:
         num_tracks = 0
 
         for track in pattern:
-            print("track")
+            # print("track")
             num_tracks += 1
 
             new_rcff = self.create_rcff_file(track)
 
-            #TODO: Ignore songs with excessive rests.
+            # TODO: Ignore songs with excessive rests.
             # if not( new_rcff.check_for_excessive_rest):
             self.rcff_files.append(new_rcff)
 
-        print(self.rcff_files)
-
         # TODO: Remove this call and move it to the GUI.
-        # This needs to be moved for testing purposes, so it will be moved when we need to worry about code coverage.
+        # TODO: This needs to be moved for testing purposes, so it will be moved when we need to worry about code coverage.
         self.pickle_files()
 
     #TODO: Make this method pickle the file at index i to a passed in file.
@@ -42,7 +40,7 @@ class Converter:
         i = 0
 
         for rcff_file in self.rcff_files:
-            print("file")
+            # print("file")
             new_file_name = os.path.splitext(self.midi_file)[0]
 
             # TODO: Move this part out of this method, and force the user to pass in the file.
@@ -57,14 +55,14 @@ class Converter:
         try:
             instrument, tempo, notes = self.extract_data(track)
         except RuntimeError as e:
-            pass  # print(e.message)
+            # print(e.message)
+            pass
         new_rcff = RCFF(self.midi_file, tempo, instrument)
         for note in notes:
-            print("note")
+            # print("note")
             new_rcff = self.create_time_slices_from_note(new_rcff, note)
         return new_rcff
 
-    #TODO Make Test
     @staticmethod
     def extract_data(track):
         notes = []  # [(time, length, pitch, velocity)]
@@ -75,23 +73,26 @@ class Converter:
         instrument = -1
         found_instrument = False
         for event in track:
-            # Used to find event types for tests.
+            # Used to find event types for tests. Don't remove.
             # print event
 
             time += event.tick
             if not found_instrument and (type(event) is midi.ProgramChangeEvent):
                 found_instrument = True
+                # TODO: Replace these magic numbers with consts
                 if event.data[0] < 57 or event.data[0] > 80:
                     raise RuntimeError('not a single voice instrument')
                 instrument = event.data[0]
-                print("a")
+
             if type(event) is midi.NoteEvent:
+                # print("b")
                 volume = event.get_velocity
-                print("b")
+
             if type(event) is midi.NoteOnEvent:
                 pitch_started[event.pitch] = time
+
             if type(event) is midi.NoteOffEvent:
-                print("c")
+                # print("c")
                 try:
                     start_time = pitch_started[event.pitch]
                     length = time - start_time
@@ -100,6 +101,7 @@ class Converter:
                     pass
             if type(event) is midi.SetTempoEvent:
                 tempo = event.get_bpm()
+
         return instrument, tempo, notes
 
     @staticmethod
@@ -110,5 +112,6 @@ class Converter:
                 rcff.add_time_slice_to_body(TimeSlice(pitch, volume, 9))
             else:
                 rcff.add_time_slice_to_body(TimeSlice(pitch, volume, 0))
+            # TODO: This i += .125 currently doesn't do anything (According to the tests)
             i += 0.125
         return rcff
