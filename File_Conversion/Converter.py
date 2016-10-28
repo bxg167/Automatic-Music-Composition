@@ -61,7 +61,7 @@ class Converter:
         new_rcff = RCFF(self.midi_file, tempo, instrument)
         for note in notes:
             print("note")
-            new_rcff = create_time_slices_from_note(new_rcff, note)
+            new_rcff = self.create_time_slices_from_note(new_rcff, note)
         return new_rcff
 
     #TODO Make Test
