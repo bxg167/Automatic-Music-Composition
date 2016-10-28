@@ -1,6 +1,7 @@
 from Queue import Queue
 from Tkinter import *
 from ActionButtons import ActionButtons
+from File_Conversion.Converter import Converter
 from PopUp import PopUp
 from ProgressBar import ProgressBar
 from PathEntry import PathEntry
@@ -47,17 +48,19 @@ def run():
     file_queue = Queue(False)
     for name in os.listdir(folder_dir):
         path = os.path.join(folder_dir, name)
-        if os.path.isfile(path) and name.endswith(".midi"):
-            print(name)
+        if os.path.isfile(path) and name.endswith(".mid"):
             file_queue.put(name)
 
     i = 0
     max_size = file_queue.qsize()
     while action_buttons.is_running and max_size > i:
-        label.config(text="Current File: " + file_queue.get(False))
+        file_name = file_queue.get(False)
+        label.config(text="Current File: " + file_name)
         progress_bar.set_percentage(i / float(max_size + 1))
         i += 1
-        time.sleep(1)
+        c = Converter(os.path.join(folder_dir, file_name))
+        c.create_rcff_files()
+
     if action_buttons.is_running:
         progress_bar.set_percentage(1)
         label.config(text="Finished")
