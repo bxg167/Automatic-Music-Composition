@@ -7,8 +7,10 @@ class FolderBrowser(Toplevel):
         Toplevel.__init__(self)
 
         self.chosen_directory = ""
+
         menu_frame = Frame(self)
         self.minsize(width=220, height=200)
+
         self.menu = Listbox(menu_frame, height=10, width=30, selectmode=SINGLE)
         self.scrollbar = Scrollbar(menu_frame, orient=VERTICAL)
 
@@ -21,6 +23,12 @@ class FolderBrowser(Toplevel):
 
         menu_frame.pack(fill=BOTH, expand=YES)
 
+        self.add_buttons()
+
+        self.working_directory = "."
+        self.fill(self.working_directory)
+
+    def add_buttons(self):
         select_button = Button(self, text="Select", width=8, command=self.make_selection)
         select_button.pack(side=RIGHT, padx=5, pady=5)
 
@@ -28,16 +36,12 @@ class FolderBrowser(Toplevel):
         browse_button.pack(side=RIGHT, padx=5, pady=5)
         browse_button.bind("<Button-1>", self.explore_folder)
 
-        self.working_directory = "."
-        self.fill(self.working_directory)
-
     def make_selection(self):
         self.chosen_directory = os.path.abspath(os.path.join(self.working_directory, self.menu.selection_get()))
         self.destroy()
 
     def explore_folder(self, event):
         self.working_directory = os.path.abspath(os.path.join(self.working_directory, self.menu.selection_get()))
-        print(self.working_directory)
         self.fill(self.working_directory)
 
     def fill(self, folder_dir):

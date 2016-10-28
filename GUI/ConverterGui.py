@@ -13,8 +13,8 @@ MIN_WIDTH = 260
 
 window = Tk()
 
-window.minsize(width=MIN_WIDTH, height=MIN_HEIGHT)
 window.geometry("440x" + str(MIN_HEIGHT))
+window.minsize(width=MIN_WIDTH, height=MIN_HEIGHT)
 window.resizable(width=TRUE, height=FALSE)
 
 path_entry = PathEntry(window)
@@ -48,7 +48,6 @@ def run():
     for name in os.listdir(folder_dir):
         path = os.path.join(folder_dir, name)
         if os.path.isfile(path) and name.endswith(".midi"):
-            print(name)
             file_queue.put(name)
 
     i = 0
