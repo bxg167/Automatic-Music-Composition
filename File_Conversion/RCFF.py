@@ -1,7 +1,7 @@
 from TimeSlice import TimeSlice
 
-class RCFF(): 
-	
+class RCFF():
+
 	def __init__(self, midi_file, tempo, instrument): 
 		self.midi_file=midi_file
 		self.tempo=tempo
@@ -17,4 +17,3 @@ class RCFF():
 			if(slice.message == 8):
 				count = count +1
 		return count > (.5 * len(self.body))
-		
