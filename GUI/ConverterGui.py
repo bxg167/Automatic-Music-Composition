@@ -1,9 +1,9 @@
-from queue import Queue
-from tkinter import *
-from GUI.ActionButtons import ActionButtons
-from GUI.PopUp import PopUp
-from GUI.ProgressBar import ProgressBar
-from GUI.PathEntry import PathEntry
+from Queue import Queue
+from Tkinter import *
+from ActionButtons import ActionButtons
+from PopUp import PopUp
+from ProgressBar import ProgressBar
+from PathEntry import PathEntry
 
 import time
 import os
@@ -13,8 +13,8 @@ MIN_WIDTH = 260
 
 window = Tk()
 
-window.geometry("440x" + str(MIN_HEIGHT))
 window.minsize(width=MIN_WIDTH, height=MIN_HEIGHT)
+window.geometry("440x" + str(MIN_HEIGHT))
 window.resizable(width=TRUE, height=FALSE)
 
 path_entry = PathEntry(window)
@@ -55,7 +55,7 @@ def run():
     max_size = file_queue.qsize()
     while action_buttons.is_running and max_size > i:
         label.config(text="Current File: " + file_queue.get(False))
-        progress_bar.set_percentage(i / (max_size + 1))
+        progress_bar.set_percentage(i / float(max_size + 1))
         i += 1
         time.sleep(1)
     if action_buttons.is_running:
