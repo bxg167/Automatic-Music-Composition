@@ -48,3 +48,4 @@ class TestConverter(TestCase):
         self.assertEquals(65, rcff.instrument)
         self.assertEquals(0, rcff.tempo)
         self.assertEquals("Dummy", rcff.midi_file)
+

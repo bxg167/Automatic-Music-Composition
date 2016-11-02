@@ -1,5 +1,4 @@
 import os
-import pickle
 
 import midi
 
@@ -9,14 +8,19 @@ from TimeSlice import TimeSlice
 
 class Converter:
     def __init__(self, midi_file):
-        self.midi_file = midi_file
-        self.rcff_files = []
+        self.__midi_file = midi_file
+
+        self.__pattern = []
+
+        if os.path.isfile(midi_file):
+            self.__pattern = midi.read_midifile(self.__midi_file)
 
     def create_rcff_files(self):
-        pattern = midi.read_midifile(self.midi_file)
+        rcff_files = []
+
         num_tracks = 0
 
-        for track in pattern:
+        for track in self.__pattern:
             # print("track")
             num_tracks += 1
 
@@ -24,29 +28,9 @@ class Converter:
 
             # TODO: Ignore songs with excessive rests.
             # if not( new_rcff.check_for_excessive_rest):
-            self.rcff_files.append(new_rcff)
+            rcff_files.append(new_rcff)
 
-        # TODO: Remove this call and move it to the GUI.
-        # TODO: This needs to be moved for testing purposes, so it will be moved when we need to worry about code coverage.
-        self.pickle_files()
-
-    #TODO: Make this method pickle the file at index i to a passed in file.
-    # The below method is what I would like, but it would be annoying to do it this way, since we will need to know
-    # how many files we have in rcff_files. May have to add a .length() method, or something like that.
-    # Again, this will be to help with code coverage and with mocking. When I work on the code coverage part,
-    # I will play around with how to get this to work nicely later.
-    # def pickle_files(self, file_handler, file_num)
-    def pickle_files(self):
-        i = 0
-
-        for rcff_file in self.rcff_files:
-            # print("file")
-            new_file_name = os.path.splitext(self.midi_file)[0]
-
-            # TODO: Move this part out of this method, and force the user to pass in the file.
-            f = open(new_file_name + str(i) + ".rcff", "w")
-            pickle.dump(rcff_file, f)
-            i += 1
+        return rcff_files
 
     def create_rcff_file(self, track):
         instrument = -1
@@ -57,7 +41,7 @@ class Converter:
         except RuntimeError as e:
             # print(e.message)
             pass
-        new_rcff = RCFF(self.midi_file, tempo, instrument)
+        new_rcff = RCFF(self.__midi_file, tempo, instrument)
         for note in notes:
             # print("note")
             new_rcff = self.create_time_slices_from_note(new_rcff, note)
@@ -73,7 +57,7 @@ class Converter:
         instrument = -1
         found_instrument = False
         for event in track:
-            # Used to find event types for tests. Don't remove.
+            # Used to find event types for tests.
             # print event
 
             time += event.tick

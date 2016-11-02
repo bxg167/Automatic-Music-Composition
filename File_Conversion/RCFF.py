@@ -1,3 +1,6 @@
+import pickle
+
+
 class RCFF:
     def __init__(self, midi_file, tempo, instrument):
         self.midi_file = midi_file
@@ -14,3 +17,7 @@ class RCFF:
             if body_slice.message == 8:
                 count += 1
         return count > (.5 * len(self.body))
+
+    def pickle(self, file_handler):
+        pickle.dump(self, file_handler)
+
