@@ -1,4 +1,4 @@
-from unittest import TestCase
+from unittest.case import TestCase
 
 from File_Conversion.RCFF import RCFF
 from File_Conversion.TimeSlice import TimeSlice

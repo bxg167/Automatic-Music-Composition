@@ -21,3 +21,16 @@ class RCFF:
     def pickle(self, file_handler):
         pickle.dump(self, file_handler)
 
+    #TODO: Test
+    def equals(self, other_rcff):
+        if type(other_rcff) != RCFF:
+            return False
+        is_equal = self.tempo == other_rcff.tempo
+        is_equal &= self.instrument == other_rcff.instrument
+        is_equal &= self.midi_file == other_rcff.midi_file
+        for notePos in range(0, len(self.body)):
+            # If there is a TimeSlice in self that doesn't match the other_rcff, then we can return False early.
+            if self.body[notePos].equals(other_rcff[notePos]):
+                return False
+
+        return is_equal

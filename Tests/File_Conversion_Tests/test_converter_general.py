@@ -1,11 +1,7 @@
-import os
-from types import NoneType
-from unittest import TestCase
+from unittest.case import TestCase
 
-import midi
-
-from File_Conversion.RCFF import RCFF
 from File_Conversion.Converter import Converter
+from File_Conversion.RCFF import RCFF
 
 
 class TestConverter(TestCase):
@@ -15,7 +11,7 @@ class TestConverter(TestCase):
         length = 10
         pitch = 15
         volume = 20
-
+        self.fail()
         note = (time, length, pitch, volume)
 
         rcff = RCFF("C:\\Users\\Bryce", 10, "Sax")
