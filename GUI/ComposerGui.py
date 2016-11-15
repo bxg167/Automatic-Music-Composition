@@ -39,14 +39,7 @@ def run():
         return
 
     print "Hello, This is where the code is supposed to go."
-
-
-def try_create_dir(new_dir):
-    try:
-        os.makedirs(new_dir)
-    except OSError as exception:
-        if exception.errno != errno.EEXIST:
-            raise
+    created_text.configure(text="Successfully Completed.")
 
 start_button.configure(command=run)
 

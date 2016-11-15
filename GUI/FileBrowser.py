@@ -43,8 +43,10 @@ class FileBrowser(Toplevel):
             self.explore_folder(temp_file_name)
 
     def explore_folder(self, event):
-        self.working_directory = os.path.abspath(os.path.join(self.working_directory, self.menu.selection_get()))
-        self.fill(self.working_directory)
+        temp_name = os.path.abspath(os.path.join(self.working_directory, self.menu.selection_get()))
+        if os.path.isdir(temp_name):
+            self.working_directory = temp_name
+            self.fill(self.working_directory)
 
     def fill(self, folder_dir):
         self.menu.delete(0, END)
@@ -56,6 +58,5 @@ class FileBrowser(Toplevel):
             if os.path.isdir(path_name):
                 self.menu.insert(i, name)
                 i += 1
-            print name
             if os.path.isfile(path_name) and name.endswith(self.file_type):
                 self.menu.insert(END, name)
