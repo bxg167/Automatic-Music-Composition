@@ -55,6 +55,11 @@ def run():
 
     i = 0
     max_size = file_queue.qsize()
+
+    if max_size == 0:
+        p = PopUp("There are no midis in this folder.")
+        action_buttons.set_not_running()
+
     while action_buttons.is_running and max_size > i:
         file_name = file_queue.get(False)
         label.config(text="Current File: " + file_name)
@@ -65,6 +70,7 @@ def run():
     if action_buttons.is_running:
         progress_bar.set_percentage(1)
         label.config(text="Finished")
+        
     action_buttons.set_not_running()
 
 

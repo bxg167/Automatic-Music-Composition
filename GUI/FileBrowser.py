@@ -2,11 +2,13 @@ from Tkinter import *
 import os
 
 
-class FolderBrowser(Toplevel):
-    def __init__(self,):
+class FileBrowser(Toplevel):
+    def __init__(self, file_extension):
+        self.file_type = file_extension
+
         Toplevel.__init__(self)
 
-        self.chosen_directory = ""
+        self.chosen_file = ""
 
         menu_frame = Frame(self)
         self.minsize(width=220, height=200)
@@ -33,8 +35,12 @@ class FolderBrowser(Toplevel):
         select_button.pack(side=RIGHT, padx=5, pady=5)
 
     def make_selection(self):
-        self.chosen_directory = os.path.abspath(os.path.join(self.working_directory, self.menu.selection_get()))
-        self.destroy()
+        temp_file_name = os.path.abspath(os.path.join(self.working_directory, self.menu.selection_get()))
+        if os.path.isfile(temp_file_name):
+            self.chosen_file = temp_file_name
+            self.destroy()
+        else:
+            self.explore_folder(temp_file_name)
 
     def explore_folder(self, event):
         self.working_directory = os.path.abspath(os.path.join(self.working_directory, self.menu.selection_get()))
@@ -46,9 +52,10 @@ class FolderBrowser(Toplevel):
         i = 1
         self.menu.insert(0, "..")
         for name in os.listdir(folder_dir):
-            if os.path.isdir(os.path.join(folder_dir, name)):
+            path_name = os.path.join(folder_dir, name)
+            if os.path.isdir(path_name):
                 self.menu.insert(i, name)
                 i += 1
-            # Will be used if I decide to make this a folder & file browser (Possibly for an advanced window)
-            # if os.path.isfile(os.path.join(dir, name)):
-            #     self.menu.insert(tkinter.END, name)
+            print name
+            if os.path.isfile(path_name) and name.endswith(self.file_type):
+                self.menu.insert(END, name)
