@@ -1,12 +1,15 @@
 import os
 import unittest
 
+file_path = os.path.dirname(__file__)
+
 main_suite = unittest.TestSuite()
 
-file_conversion_suite = unittest.TestLoader().discover(os.path.abspath("./Tests/File_Conversion_Tests"))
+
+file_conversion_suite = unittest.TestLoader().discover(os.path.join(file_path, "File_Conversion_Tests"))
 main_suite.addTest(file_conversion_suite)
 
-gui_suite = unittest.TestLoader().discover("./Tests/GUI_Tests")
+gui_suite = unittest.TestLoader().discover(os.path.join(file_path, "GUI_Tests"))
 main_suite.addTest(gui_suite)
 
 results = unittest.TestResult()

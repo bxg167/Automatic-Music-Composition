@@ -124,5 +124,3 @@ for j in range(10000):
             out += x*pow(2,index)
         print str(a_int) + " + " + str(b_int) + " = " + str(out)
         print "------------"
-
-        

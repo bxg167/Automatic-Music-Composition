@@ -5,10 +5,14 @@ import midi
 
 from File_Conversion.Converter import Converter
 
+file_path = os.path.dirname(__file__)
 
 class TestConverter(TestCase):
     def test_create_rcff_file_from_track_with_no_useful_info(self):
-        pattern = midi.read_midifile(os.path.abspath(os.path.join("./File_Conversion_Tests", "mary.mid")))
+
+        pattern = midi.read_midifile(os.path.abspath(os.path.join(file_path, "mary.mid")))
+
+        # pattern = midi.read_midifile(os.path.abspath(os.path.join("./File_Conversion_Tests", "mary.mid")))
 
         self.assertEquals(2, len(pattern))
 
@@ -23,12 +27,12 @@ class TestConverter(TestCase):
         self.assertRaises(RuntimeError, Converter.extract_data, pattern[1])
 
     def test_create_rcff_file_from_track_with_exception_thrown(self):
-        pattern = midi.read_midifile(os.path.abspath(os.path.join("./File_Conversion_Tests", "mary.mid")))
+        pattern = midi.read_midifile(os.path.abspath(os.path.join(file_path, "mary.mid")))
 
         self.assertRaises(RuntimeError, Converter.extract_data, pattern[1])
 
     def test_create_rcff_file_from_file_with_useful_info(self):
-        pattern = midi.read_midifile(os.path.abspath(os.path.join("./File_Conversion_Tests", "bsax2.mid")))
+        pattern = midi.read_midifile(os.path.abspath(os.path.join(file_path, "bsax2.mid")))
 
         c = Converter("Dummy")
 
