@@ -78,7 +78,6 @@ class FileConversionFunctionalTests(TestCase):
     #Helper Methods
     def create_rcff_files(self, file_name):
         test_file = os.path.abspath(os.path.join(CURRENT_DIRECTORY, "./Functional_Test_Files", file_name))
-        print test_file
 
         converter = Converter(test_file)
         rcff_files = converter.create_rcff_files()
