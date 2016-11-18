@@ -1,4 +1,4 @@
-import unittest
+from unittest import TestCase
 import os
 
 from File_Conversion.Converter import Converter
@@ -7,10 +7,10 @@ FILE_PATH = os.path.dirname(__file__)
 SAX_INSTRUMENT_ID = 65
 
 
-class FileConversionFunctionalTestSuite(unittest.TestCase):
+class FileConversionFunctionalTests(TestCase):
 
     # Case 2.1.1
-    def header_list_test(self):
+    def test_header_list(self):
         test_file = os.path.abspath(os.path.join(FILE_PATH, "../Functional_Test_Files/SaxFormat1.mid"))
         # test_file = os.path.abspath(os.path.join(FILE_PATH, "C:\Users\Bryce\PycharmProjects\Automatic-Music-Composition\Automatic-Music-Composition\Tests\Music Files\sball1.mid"))
 
@@ -28,4 +28,4 @@ class FileConversionFunctionalTestSuite(unittest.TestCase):
 
         # TODO: BUG 1.3
         # TODO: BUG 1.1
-        # self.assertEquals(150, rcff_files[0].tempo)
+        self.assertEquals(150, rcff_files[0].tempo)

@@ -11,7 +11,6 @@ class TestConverter(TestCase):
         length = 10
         pitch = 15
         volume = 20
-        self.fail()
         note = (time, length, pitch, volume)
 
         rcff = RCFF("C:\\Users\\Bryce", 10, "Sax")
