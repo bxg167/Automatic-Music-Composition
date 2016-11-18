@@ -7,6 +7,7 @@ from File_Conversion.Converter import Converter
 CURRENT_DIRECTORY = os.path.dirname(__file__)
 SAX_INSTRUMENT_ID = 65
 OBOE_INSTRUMENT_ID = 68
+LENGTH_OF_NOTE = 120
 
 
 class FileConversionFunctionalTests(TestCase):
@@ -16,12 +17,11 @@ class FileConversionFunctionalTests(TestCase):
         rcff_files = self.create_rcff_files("Sax.mid")
 
         num_notes = 16
-        length_of_notes = 120
 
         # TODO: BUG 1.1
         self.assertEquals(1, len(rcff_files))
         self.assertEquals(SAX_INSTRUMENT_ID, rcff_files[0].instrument)
-        self.assertEquals(num_notes * length_of_notes, len(rcff_files[0].body))
+        self.assertEquals(num_notes * LENGTH_OF_NOTE, len(rcff_files[0].body))
 
         # TODO: BUG 1.3
         # TODO: BUG 1.1
@@ -55,19 +55,17 @@ class FileConversionFunctionalTests(TestCase):
 
         self.assertEquals(expected_rcff_files_created, len(rcff_files))
 
-        length_of_notes = 120
-
         sax_rcff = rcff_files[0]
 
         self.assertEquals(SAX_INSTRUMENT_ID, sax_rcff.instrument)
-        self.assertEquals(num_notes * length_of_notes, len(sax_rcff.body))
+        self.assertEquals(num_notes * LENGTH_OF_NOTE, len(sax_rcff.body))
 
         self.assertEquals(150, sax_rcff.tempo)
 
         if expected_rcff_files_created == 2:
             oboe_rcff = rcff_files[1]
             self.assertEquals(OBOE_INSTRUMENT_ID, oboe_rcff.instrument)
-            self.assertEquals(num_notes * length_of_notes, len(oboe_rcff.body))
+            self.assertEquals(num_notes * LENGTH_OF_NOTE, len(oboe_rcff.body))
 
             self.assertEquals(150, oboe_rcff.tempo)
 

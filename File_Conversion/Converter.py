@@ -47,6 +47,8 @@ class Converter:
         except RuntimeError as e:
             # print(e.message)
             pass
+        # Do we want to give the RCFF a unique name here? Like RCFF(self.__midi_file + ID, tempo, instrument)?
+        # This will allow us to test for 2.1.8 automatically, if not, then we can just run this test case manually
         new_rcff = RCFF(self.__midi_file, tempo, instrument)
 
         for note in notes:
