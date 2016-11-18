@@ -14,6 +14,8 @@ class Converter:
 
         if os.path.isfile(midi_file):
             self.__pattern = midi.read_midifile(self.__midi_file)
+        else:
+            raise Exception("The file passed doesn't exist")
 
     def create_rcff_files(self):
         rcff_files = []
@@ -98,6 +100,8 @@ class Converter:
         time, length, pitch, volume = note
 
         for i in range(0, length):
+
+            #TODO: BUG 1.7
             if i == 0:
                 rcff.add_time_slice_to_body(TimeSlice(pitch, volume, 9))
             else:
