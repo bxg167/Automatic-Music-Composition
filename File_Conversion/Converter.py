@@ -67,7 +67,6 @@ class Converter:
         for event in track:
             # Used to find event types for tests.
             # print event
-
             time += event.tick
             if not found_instrument and (type(event) is midi.ProgramChangeEvent):
                 found_instrument = True
@@ -76,14 +75,17 @@ class Converter:
                     raise RuntimeError('not a single voice instrument')
                 instrument = event.data[0]
 
-            elif type(event) is midi.NoteEvent:
-                # print("b")
-                volume = event.get_velocity
+            # This never activates because type(xxx) is yyy doesn't work with inheritance, which is what I think this method was going for.
+            # Along with that, the volume is specified in the NoteOnEvent, NoteOffEvent does have a volume, but it is always 0
+            # if type(event) is midi.NoteEvent:
+            #     # print("b")
+            #     volume = event.get_velocity
 
-            elif type(event) is midi.NoteOnEvent:
+            if type(event) is midi.NoteOnEvent:
                 pitch_started[event.pitch] = time
+                volume = event.get_velocity.im_self.velocity
 
-            elif type(event) is midi.NoteOffEvent:
+            if type(event) is midi.NoteOffEvent:
                 # print("c")
                 try:
                     start_time = pitch_started[event.pitch]
@@ -91,7 +93,7 @@ class Converter:
                     notes.append((time, length, event.pitch, volume))
                 except KeyError:
                     pass
-            elif type(event) is midi.SetTempoEvent:
+            if type(event) is midi.SetTempoEvent:
                 tempo = event.get_bpm()
 
         return instrument, tempo, notes

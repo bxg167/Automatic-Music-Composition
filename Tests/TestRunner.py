@@ -6,8 +6,8 @@ file_path = os.path.dirname(__file__)
 main_suite = unittest.TestSuite()
 
 # For now, leave these uncommented out, we only want to test Functional tests for now.
-unit_test_suite = unittest.TestLoader().discover(os.path.join(file_path, "Unit_Tests"))
-main_suite.addTest(unit_test_suite)
+# unit_test_suite = unittest.TestLoader().discover(os.path.join(file_path, "Unit_Tests"))
+# main_suite.addTest(unit_test_suite)
 
 functional_test_suite = unittest.TestLoader().discover(os.path.join(file_path, "Functional_Tests"))
 main_suite.addTest(functional_test_suite)

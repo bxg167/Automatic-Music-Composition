@@ -73,6 +73,11 @@ class FileConversionFunctionalTests(TestCase):
     def test_exception_with_bad_file(self):
         self.assertRaises(TypeError, self.create_rcff_files, "TextDocument.mid")
 
+    def test_midi_format_type(self, name, test_file_name, expected_rcff_files_created, num_notes):
+        print "BOOM: " + test_file_name
+        rcff_files = self.create_rcff_files("OboeAndSaxFormat1.mid")
+        print "DONE: " + test_file_name
+
     #Helper Methods
     def create_rcff_files(self, file_name):
         test_file = os.path.abspath(os.path.join(CURRENT_DIRECTORY, "./Functional_Test_Files", file_name))
