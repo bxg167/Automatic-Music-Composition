@@ -24,31 +24,36 @@ class Converter:
             # print("track")
             num_tracks += 1
 
-            new_rcff = self.create_rcff_file(track)
+            new_rcff = self.__create_rcff_file__(track)
 
-            # TODO: Ignore songs with excessive rests.
+            # TODO: BUG 1.1
             # if not( new_rcff.check_for_excessive_rest):
             rcff_files.append(new_rcff)
 
         return rcff_files
 
-    def create_rcff_file(self, track):
+    def __create_rcff_file__(self, track):
         instrument = -1
         notes = []
         tempo = -1
         try:
-            instrument, tempo, notes = self.extract_data(track)
+
+            instrument, tempo, notes = self.__extract_data__(track)
+
+            # TODO: BUG 1.2
+            # print tempo
         except RuntimeError as e:
             # print(e.message)
             pass
         new_rcff = RCFF(self.__midi_file, tempo, instrument)
+
+        print ("Start")
         for note in notes:
-            # print("note")
-            new_rcff = self.create_time_slices_from_note(new_rcff, note)
+            new_rcff = self.__create_time_slices_from_note__(new_rcff, note)
         return new_rcff
 
     @staticmethod
-    def extract_data(track):
+    def __extract_data__(track):
         notes = []  # [(time, length, pitch, velocity)]
         time = 0
         tempo = 0
@@ -63,19 +68,19 @@ class Converter:
             time += event.tick
             if not found_instrument and (type(event) is midi.ProgramChangeEvent):
                 found_instrument = True
-                # TODO: Replace these magic numbers with consts
+                # TODO: BUG 1.3
                 if event.data[0] < 57 or event.data[0] > 80:
                     raise RuntimeError('not a single voice instrument')
                 instrument = event.data[0]
 
-            if type(event) is midi.NoteEvent:
+            elif type(event) is midi.NoteEvent:
                 # print("b")
                 volume = event.get_velocity
 
-            if type(event) is midi.NoteOnEvent:
+            elif type(event) is midi.NoteOnEvent:
                 pitch_started[event.pitch] = time
 
-            if type(event) is midi.NoteOffEvent:
+            elif type(event) is midi.NoteOffEvent:
                 # print("c")
                 try:
                     start_time = pitch_started[event.pitch]
@@ -83,19 +88,22 @@ class Converter:
                     notes.append((time, length, event.pitch, volume))
                 except KeyError:
                     pass
-            if type(event) is midi.SetTempoEvent:
+            elif type(event) is midi.SetTempoEvent:
                 tempo = event.get_bpm()
 
         return instrument, tempo, notes
 
     @staticmethod
-    def create_time_slices_from_note(rcff, note):
+    def __create_time_slices_from_note__(rcff, note):
         time, length, pitch, volume = note
+
         for i in range(0, length):
             if i == 0:
                 rcff.add_time_slice_to_body(TimeSlice(pitch, volume, 9))
             else:
                 rcff.add_time_slice_to_body(TimeSlice(pitch, volume, 0))
-            # TODO: This i += .125 currently doesn't do anything (According to the tests)
-            i += 0.125
+
+            #TODO: BUG 1.4
+            i += .125
+
         return rcff

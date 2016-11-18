@@ -21,7 +21,7 @@ class RCFF:
     def pickle(self, file_handler):
         pickle.dump(self, file_handler)
 
-    #TODO: Test
+    # Used for testing purposes only
     def equals(self, other_rcff):
         if type(other_rcff) != RCFF:
             return False

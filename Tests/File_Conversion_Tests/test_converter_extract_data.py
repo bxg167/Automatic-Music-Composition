@@ -13,7 +13,7 @@ class TestConverter(TestCase):
 
         self.assertEquals(2, len(pattern))
 
-        instrument, tempo, notes = Converter.extract_data(pattern[0])
+        instrument, tempo, notes = Converter.__extract_data__(pattern[0])
         self.assertEquals(-1, instrument)
         self.assertEquals(0, tempo)
         self.assertEquals(0, len(notes))
@@ -21,13 +21,13 @@ class TestConverter(TestCase):
     def test_extract_data_from_track_with_exception_thrown(self):
         pattern = midi.read_midifile(os.path.abspath(os.path.join(file_path, "mary.mid")))
 
-        self.assertRaises(RuntimeError, Converter.extract_data, pattern[1])
+        self.assertRaises(RuntimeError, Converter.__extract_data__, pattern[1])
 
     def test_extract_data_from_file_with_useful_info(self):
         pattern = midi.read_midifile(os.path.abspath(os.path.join(file_path, "bsax2.mid")))
         self.assertEquals(15, len(pattern))
 
-        instrument, tempo, notes = Converter.extract_data(pattern[10]) #First 9 patterns threw errors due to multiple voices.
+        instrument, tempo, notes = Converter.__extract_data__(pattern[10]) #First 9 patterns threw errors due to multiple voices.
 
         self.assertEquals(65, instrument)
         self.assertEquals(0, tempo)

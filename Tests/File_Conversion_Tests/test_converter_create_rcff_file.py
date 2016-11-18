@@ -18,27 +18,27 @@ class TestConverter(TestCase):
 
         c = Converter("Dummy")
 
-        rcff = c.create_rcff_file(pattern[0])
+        rcff = c.__create_rcff_file__(pattern[0])
         self.assertEquals(0, len(rcff.body))
         self.assertEquals(-1, rcff.instrument)
         self.assertEquals(0, rcff.tempo)
         self.assertEquals("Dummy", rcff.midi_file)
 
-        self.assertRaises(RuntimeError, Converter.extract_data, pattern[1])
+        self.assertRaises(RuntimeError, Converter.__extract_data__, pattern[1])
 
     def test_create_rcff_file_from_track_with_exception_thrown(self):
         pattern = midi.read_midifile(os.path.abspath(os.path.join(file_path, "mary.mid")))
 
-        self.assertRaises(RuntimeError, Converter.extract_data, pattern[1])
+        self.assertRaises(RuntimeError, Converter.__extract_data__, pattern[1])
 
     def test_create_rcff_file_from_file_with_useful_info(self):
         pattern = midi.read_midifile(os.path.abspath(os.path.join(file_path, "bsax2.mid")))
 
         c = Converter("Dummy")
 
-        rcff = c.create_rcff_file(pattern[10])
+        rcff = c.__create_rcff_file__(pattern[10])
 
-        instrument, tempo, notes = Converter.extract_data(pattern[10])
+        instrument, tempo, notes = Converter.__extract_data__(pattern[10])
 
         expected_body_length = 0
         for note in notes:

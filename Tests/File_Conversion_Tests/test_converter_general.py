@@ -16,7 +16,7 @@ class TestConverter(TestCase):
 
         rcff = RCFF("C:\\Users\\Bryce", 10, "Sax")
 
-        rcff = Converter.create_time_slices_from_note(rcff, note)
+        rcff = Converter.__create_time_slices_from_note__(rcff, note)
 
         self.assertEqual(length, len(rcff.body))
         for timeslice in rcff.body:
