@@ -21,11 +21,11 @@ class FileConversionFunctionalTestSuite(unittest.TestCase):
         num_notes = 16
         length_of_notes = 120
 
-        # TODO: BUG 1.5
+        # TODO: BUG 1.1
         # self.assertEquals(1, len(rcff_files))
         # self.assertEquals(SAX_INSTRUMENT_ID, rcff_files[0].instrument)
         # self.assertEquals(num_notes * length_of_notes,, len(rcff_file[0].body))
 
-        # TODO: BUG 1.2
-        # TODO: BUG 1.5
+        # TODO: BUG 1.3
+        # TODO: BUG 1.1
         # self.assertEquals(150, rcff_files[0].tempo)

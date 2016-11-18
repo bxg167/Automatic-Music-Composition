@@ -26,7 +26,7 @@ class Converter:
 
             new_rcff = self.__create_rcff_file__(track)
 
-            # TODO: BUG 1.1
+            # TODO: BUG 1.2
             # if not( new_rcff.check_for_excessive_rest):
             rcff_files.append(new_rcff)
 
@@ -68,7 +68,7 @@ class Converter:
             time += event.tick
             if not found_instrument and (type(event) is midi.ProgramChangeEvent):
                 found_instrument = True
-                # TODO: BUG 1.3
+                # TODO: BUG 1.4
                 if event.data[0] < 57 or event.data[0] > 80:
                     raise RuntimeError('not a single voice instrument')
                 instrument = event.data[0]
@@ -103,7 +103,7 @@ class Converter:
             else:
                 rcff.add_time_slice_to_body(TimeSlice(pitch, volume, 0))
 
-            #TODO: BUG 1.4
+            #TODO: BUG 1.5
             i += .125
 
         return rcff
