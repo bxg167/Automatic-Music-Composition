@@ -17,6 +17,6 @@ class PathEntry(Frame):
         browser = FolderBrowser()
         browser.grab_set()
         browser.wait_window()
-        if browser.chosen_directory != "":
+        if browser.selection != "":
             self.field.delete(0, END)
-            self.field.insert(0, browser.chosen_directory)
+            self.field.insert(0, browser.selection)

@@ -3,10 +3,11 @@ import os
 
 
 class FolderBrowser(Toplevel):
-    def __init__(self,):
+    def __init__(self):
+        self.selection_index = 0
         Toplevel.__init__(self)
 
-        self.chosen_directory = ""
+        self.selection = ""
 
         menu_frame = Frame(self)
         self.minsize(width=220, height=200)
@@ -18,6 +19,11 @@ class FolderBrowser(Toplevel):
         self.scrollbar.configure(command=self.menu.yview)
 
         self.menu.bind("<Double-1>", self.explore_folder)
+        self.menu.bind("<Return>", self.explore_folder)
+        self.menu.bind("<Down>", lambda event: self.move_selection(1))
+        self.menu.bind("<Up>", lambda event: self.move_selection(-1))
+        self.menu.focus_set()
+
         self.menu.pack(fill=BOTH, expand=YES, side=LEFT)
         self.scrollbar.pack(fill=Y, expand=YES)
 
@@ -28,17 +34,32 @@ class FolderBrowser(Toplevel):
         self.working_directory = "."
         self.fill(self.working_directory)
 
+        self.reset_selection()
+
+    def move_selection(self, movement):
+        self.menu.selection_clear(0, END)
+
+        if 0 <= self.selection_index + movement < self.menu.size():
+            self.selection_index = self.selection_index + movement
+
+        self.menu.select_set(first=self.selection_index, last=self.selection_index)
+
     def add_button(self):
         select_button = Button(self, text="Select", width=8, command=self.make_selection)
         select_button.pack(side=RIGHT, padx=5, pady=5)
 
     def make_selection(self):
-        self.chosen_directory = os.path.abspath(os.path.join(self.working_directory, self.menu.selection_get()))
+        self.selection = os.path.abspath(os.path.join(self.working_directory, self.menu.selection_get()))
         self.destroy()
 
     def explore_folder(self, event):
         self.working_directory = os.path.abspath(os.path.join(self.working_directory, self.menu.selection_get()))
         self.fill(self.working_directory)
+        self.reset_selection()
+
+    def reset_selection(self):
+        self.selection_index = 0
+        self.move_selection(0)
 
     def fill(self, folder_dir):
         self.menu.delete(0, END)

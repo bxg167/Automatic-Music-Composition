@@ -17,6 +17,6 @@ class FileEntry(Frame):
         browser = FileBrowser("rcff")
         browser.grab_set()
         browser.wait_window()
-        if browser.chosen_file != "":
+        if browser.selection != "":
             self.field.delete(0, END)
-            self.field.insert(0, browser.chosen_file)
+            self.field.insert(0, browser.selection)

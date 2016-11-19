@@ -38,7 +38,7 @@ class FileConversionFunctionalTests(TestCase):
     @parameterized.expand([["no_pitches", "Drums.mid"],  # Case 2.1.3
                            ["no_chords", "Piano.mid"],  # Case 2.1.4
                            ["long_rests", "SaxLongRest.mid"],  # Case 2.1.5a
-                           ["empty", "SaxNoNotes.mid"], # Case 2.1.9
+                           ["empty", "SaxNoNotes.mid"], # Case 2.1.9 & Case 2.1.5b
                            ])
     def test_voice_discard(self, name, test_file_name):
         rcff_files = self.create_rcff_files(test_file_name)

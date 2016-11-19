@@ -13,4 +13,6 @@ class PopUp(Toplevel):
         button = Button(self, text="Ok", command=self.destroy, padx=10)
         button.pack(pady=5)
 
-        self.focus_force()
+        self.grab_set()
+        self.wait_window()
+
