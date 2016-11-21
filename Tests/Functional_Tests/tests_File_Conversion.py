@@ -50,7 +50,7 @@ class FileConversionFunctionalTests(TestCase):
                            # Format 2 test cancelled for now (Apparently, these are tough to find/make)
                            # ["2", "OboeAndSaxFormat2.mid", 2, 12],  # Case 2.1.7b
                            ])
-    def test_midi_format_type(self, name, test_file_name, expected_rcff_files_created, num_notes):
+    def test_midi_format_type(self, name, test_file_name, expected_rcff_files_created, expected_num_notes):
         rcff_files = self.create_rcff_files(test_file_name)
 
         self.assertEquals(expected_rcff_files_created, len(rcff_files))
@@ -58,14 +58,14 @@ class FileConversionFunctionalTests(TestCase):
         sax_rcff = rcff_files[0]
 
         self.assertEquals(SAX_INSTRUMENT_ID, sax_rcff.instrument)
-        self.assertEquals(num_notes * LENGTH_OF_NOTE, len(sax_rcff.body))
+        self.assertEquals(expected_num_notes * LENGTH_OF_NOTE, len(sax_rcff.body))
 
         self.assertEquals(150, sax_rcff.tempo)
 
         if expected_rcff_files_created == 2:
             oboe_rcff = rcff_files[1]
             self.assertEquals(OBOE_INSTRUMENT_ID, oboe_rcff.instrument)
-            self.assertEquals(num_notes * LENGTH_OF_NOTE, len(oboe_rcff.body))
+            self.assertEquals(expected_num_notes * LENGTH_OF_NOTE, len(oboe_rcff.body))
 
             self.assertEquals(150, oboe_rcff.tempo)
 
