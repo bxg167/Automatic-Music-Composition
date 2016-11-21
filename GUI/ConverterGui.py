@@ -41,8 +41,6 @@ def run():
     folder_dir = path_entry.field.get()
     if not os.path.isdir(folder_dir):
         pop_up = PopUp("Not a valid directory")
-        pop_up.grab_set()
-        pop_up.mainloop()
         return
 
     action_buttons.set_running()

@@ -1,7 +1,5 @@
 from Tkinter import *
 
-import errno
-
 from GUI.FileEntry import FileEntry
 from GUI.SaveAs import SaveAs
 from PopUp import PopUp
@@ -27,6 +25,7 @@ path_entry.pack(fill=X, expand=YES, padx=10, pady=10)
 created_text = Label(window)
 created_text.pack(fill=X)
 
+
 #Place holder for actual method
 def start_process(file_name):
     print "Composing: " + file_name
@@ -38,6 +37,9 @@ def open_save_as():
 
     if browser.selection != "":
         start_process(browser.selection)
+        created_text.configure(text=os.path.basename(browser.selection) + " Successfully Completed.")
+    else:
+        created_text.configure(text="Not Completed.")
 
 
 start_button = Button(window, text="Start", width=6)
@@ -49,14 +51,10 @@ def run():
     folder_dir = path_entry.field.get()
 
     if not os.path.isfile(folder_dir):
-        pop_up = PopUp("Not a valid file")
-        pop_up.grab_set()
-        pop_up.mainloop()
+        PopUp("Not a valid file")
         return
 
     open_save_as()
-
-    created_text.configure(text="Successfully Completed.")
 
 start_button.configure(command=run)
 

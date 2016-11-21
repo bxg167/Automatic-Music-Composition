@@ -14,7 +14,7 @@ class FileEntry(Frame):
         self.field.pack(fill=X, padx=5, expand=YES, side=RIGHT)
 
     def open_explorer(self):
-        browser = FileBrowser("rcff")
+        browser = FileBrowser(".snapshot")
         browser.grab_set()
         browser.wait_window()
         if browser.selection != "":
