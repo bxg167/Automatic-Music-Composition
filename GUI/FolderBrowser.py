@@ -4,7 +4,7 @@ import os
 
 class FolderBrowser(Toplevel):
     def __init__(self):
-        self.selection_index = 0
+        self.selection_index = -1
         Toplevel.__init__(self)
 
         self.selection = ""
@@ -34,13 +34,14 @@ class FolderBrowser(Toplevel):
         self.working_directory = "."
         self.fill(self.working_directory)
 
-        self.reset_selection()
-
     def move_selection(self, movement):
         self.menu.selection_clear(0, END)
 
         if 0 <= self.selection_index + movement < self.menu.size():
             self.selection_index = self.selection_index + movement
+
+        if self.selection_index == -1:
+            self.selection_index = 0
 
         self.menu.select_set(first=self.selection_index, last=self.selection_index)
 

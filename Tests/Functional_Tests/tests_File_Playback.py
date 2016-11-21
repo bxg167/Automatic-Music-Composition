@@ -2,13 +2,12 @@ import pickle
 import uuid
 from unittest import TestCase
 import os
-from nose_parameterized import parameterized
 
-from File_Conversion.Converter import Converter
 from File_Conversion.RCFF import RCFF
 
 CURRENT_DIRECTORY = os.path.dirname(__file__)
 EXISTING_RNN_FILE = CURRENT_DIRECTORY + "test.snapshot"
+
 
 class PlaybackFunctionalTests(TestCase):
 
@@ -61,6 +60,5 @@ class PlaybackFunctionalTests(TestCase):
         bad_snapshot = os.path.join(CURRENT_DIRECTORY, "Functional_Test_Files\Text.snapshot")
 
         # If we try to create an rcff file with a bad snapshot, an exception should be raised.
-        self.assertRaises(Exception,
-    # Playback.create_rcff(RNN=bad_snapshot))
+        self.assertRaises(Exception,  # Playback.create_rcff(RNN=bad_snapshot)
                           )

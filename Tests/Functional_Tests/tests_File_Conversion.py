@@ -47,7 +47,7 @@ class FileConversionFunctionalTests(TestCase):
 
     @parameterized.expand([["0", "SaxFormat0.mid", 1, 8],  # Case 2.1.6
                            ["1", "OboeAndSaxFormat1.mid", 2, 12],  # Case 2.1.7a
-                           # Format 2 test cancelled for now (Apparently, these are tough to find/make)
+                           # Test  case 2.1.7b cancelled for now (Apparently, these are tough to find/make)
                            # ["2", "OboeAndSaxFormat2.mid", 2, 12],  # Case 2.1.7b
                            ])
     def test_midi_format_type(self, name, test_file_name, expected_rcff_files_created, expected_num_notes):
@@ -73,6 +73,7 @@ class FileConversionFunctionalTests(TestCase):
     def test_exception_with_bad_file(self):
         self.assertRaises(TypeError, self.create_rcff_files, "TextDocument.mid")
 
+    # No test case id.
     # This test was added to test what happens when a bad path is given to Converter's constructor.
     def test_file_not_exists_exception(self):
         self.assertRaises(Exception, lambda: Converter("bad_file.asdf.abc"))
