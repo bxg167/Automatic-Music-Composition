@@ -102,15 +102,18 @@ class Converter:
     def __create_time_slices_from_note__(rcff, note):
         time, length, pitch, volume = note
 
-        for i in range(0, length):
+        # note length is in ticks (milliseconds),but we want a TimeSlice for each quarter of a beat (a 16th note, generally)
+        # (.25 beats/TimeSlice * 60000 ticks/minute) / (tempo bpm) ==> ticks per TimeSlice
+        tickIncrement = 125     # default to 120 bpm
+        if rcff.tempo <> 0:
+            tickIncrement = 15000 / (rcff.tempo)
+
+        for i in range(0, length, tickIncrement):
 
             #TODO: BUG 1.7
             if i == 0:
                 rcff.add_time_slice_to_body(TimeSlice(pitch, volume, 9))
             else:
                 rcff.add_time_slice_to_body(TimeSlice(pitch, volume, 0))
-
-            #TODO: BUG 1.5
-            i += .125
 
         return rcff
