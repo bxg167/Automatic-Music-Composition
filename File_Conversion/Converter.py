@@ -4,9 +4,14 @@ import midi
 
 from RCFF import RCFF
 from TimeSlice import TimeSlice
-
+REST = 8
+SUSTAINED=0
+BEGIN =9
+MIN_SINGLE_VOICE_RANGE=57
+MAX_SINGLE_VOICE_RANGE=80
 
 class Converter:
+    
     def __init__(self, midi_file):
         self.__midi_file = midi_file
 
@@ -21,31 +26,30 @@ class Converter:
         rcff_files = []
 
         num_tracks = 0
-
+        tempo = self.__extract_tempo__(self.__pattern[0])
+        print(tempo)
         for track in self.__pattern:
-            # print("track")
+            print("track")
             num_tracks += 1
 
-            new_rcff = self.__create_rcff_file__(track)
+            new_rcff = self.__create_rcff_file__(track,tempo)
 
             # TODO: BUG 1.2
-            # if not( new_rcff.check_for_excessive_rest):
-            rcff_files.append(new_rcff)
+            if ( new_rcff.check_for_excessive_rest):
+                rcff_files.append(new_rcff)
 
         return rcff_files
 
-    def __create_rcff_file__(self, track):
+    def __create_rcff_file__(self, track,tempo):
         instrument = -1
         notes = []
-        tempo = -1
         try:
-
-            instrument, tempo, notes = self.__extract_data__(track)
+            instrument, notes = self.__extract_data__(track)
 
             # TODO: BUG 1.2
-            # print tempo
+            #print tempo
         except RuntimeError as e:
-            # print(e.message)
+            print(e.message)
             pass
         # Do we want to give the RCFF a unique name here? Like RCFF(self.__midi_file + ID, tempo, instrument)?
         # This will allow us to test for 2.1.8 automatically, if not, then we can just run this test case manually
@@ -54,12 +58,18 @@ class Converter:
         for note in notes:
             new_rcff = self.__create_time_slices_from_note__(new_rcff, note)
         return new_rcff
-
+    
+    @staticmethod
+    def __extract_tempo__(track):
+       for event in track:
+            if type(event) is midi.SetTempoEvent:
+                return event.get_bpm()
+            
     @staticmethod
     def __extract_data__(track):
         notes = []  # [(time, length, pitch, velocity)]
         time = 0
-        tempo = 0
+        #tempo = 0
         pitch_started = {}
         volume = -1
         instrument = -1
@@ -71,7 +81,7 @@ class Converter:
             if not found_instrument and (type(event) is midi.ProgramChangeEvent):
                 found_instrument = True
                 # TODO: BUG 1.4
-                if event.data[0] < 57 or event.data[0] > 80:
+                if event.data[0] < MIN_SINGLE_VOICE_RANGE or event.data[0] > MAX_SINGLE_VOICE_RANGE:
                     raise RuntimeError('not a single voice instrument')
                 instrument = event.data[0]
 
@@ -93,24 +103,28 @@ class Converter:
                     notes.append((time, length, event.pitch, volume))
                 except KeyError:
                     pass
-            if type(event) is midi.SetTempoEvent:
-                tempo = event.get_bpm()
+            #if type(event) is midi.SetTempoEvent:
+                #tempo = event.get_bpm()
 
-        return instrument, tempo, notes
+        return instrument, notes
 
     @staticmethod
     def __create_time_slices_from_note__(rcff, note):
         time, length, pitch, volume = note
 
-        for i in range(0, length):
+        rcff.add_time_slice_to_body(TimeSlice(pitch, volume, 9))
+        for i in range(0,int(round(length/.125))):
+            rcff.add_time_slice_to_body(TimeSlice(pitch, volume, 0))
+        rcff.add_time_slice_to_body(TimeSlice(pitch, volume, 8))
+
+        #for i in range(0, length):
 
             #TODO: BUG 1.7
-            if i == 0:
-                rcff.add_time_slice_to_body(TimeSlice(pitch, volume, 9))
-            else:
-                rcff.add_time_slice_to_body(TimeSlice(pitch, volume, 0))
+           # if i == 0:
+                #rcff.add_time_slice_to_body(TimeSlice(pitch, volume, 9))
+            #else:
+                #rcff.add_time_slice_to_body(TimeSlice(pitch, volume, 0))
 
             #TODO: BUG 1.5
-            i += .125
 
         return rcff
