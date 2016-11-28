@@ -105,7 +105,7 @@ class Converter:
         # note length is in ticks (milliseconds),but we want a TimeSlice for each quarter of a beat (a 16th note, generally)
         # (.25 beats/TimeSlice * 60000 ticks/minute) / (tempo bpm) ==> ticks per TimeSlice
         tickIncrement = 125     # default to 120 bpm
-        if rcff.tempo <> 0:
+        if rcff.tempo != 0:
             tickIncrement = 15000 / (rcff.tempo)
 
         for i in range(0, length, tickIncrement):

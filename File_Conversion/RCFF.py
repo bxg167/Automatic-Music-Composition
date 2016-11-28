@@ -20,3 +20,8 @@ class RCFF:
 
     def pickle(self, file_handler):
         pickle.dump(self, file_handler)
+
+    @staticmethod
+    def unpickle(file_handler):
+        rcff = pickle.load(file_handler)
+        return rcff
