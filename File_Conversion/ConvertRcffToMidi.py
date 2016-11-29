@@ -39,7 +39,7 @@ class ConvertRcffToMidi:
         # see ticks/slice explanation in Converter.__create_time_slices_from_note__
         ticks_per_time_slice = 125     # set default to 120 bpm
         if r.tempo > 0:
-            ticks_per_time_slice = 15000 / r.tempo
+            ticks_per_time_slice = int(15000 / r.tempo)
 
         # Iterate over timeslices in RCFF, creating midi note events as appropriate
         for timeSlice in r.body:

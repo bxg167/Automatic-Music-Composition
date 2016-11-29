@@ -11,7 +11,7 @@ MIN_SINGLE_VOICE_RANGE=57
 MAX_SINGLE_VOICE_RANGE=80
 
 class Converter:
-    
+
     def __init__(self, midi_file):
         self.__midi_file = midi_file
 
@@ -58,13 +58,13 @@ class Converter:
         for note in notes:
             new_rcff = self.__create_time_slices_from_note__(new_rcff, note)
         return new_rcff
-    
+
     @staticmethod
     def __extract_tempo__(track):
        for event in track:
             if type(event) is midi.SetTempoEvent:
                 return event.get_bpm()
-            
+
     @staticmethod
     def __extract_data__(track):
         notes = []  # [(time, length, pitch, velocity)]
@@ -112,32 +112,18 @@ class Converter:
     def __create_time_slices_from_note__(rcff, note):
         time, length, pitch, volume = note
 
-<<<<<<< HEAD
-        rcff.add_time_slice_to_body(TimeSlice(pitch, volume, 9))
-        for i in range(0,int(round(length/.125))):
-            rcff.add_time_slice_to_body(TimeSlice(pitch, volume, 0))
-        rcff.add_time_slice_to_body(TimeSlice(pitch, volume, 8))
-
-        #for i in range(0, length):
-=======
         # note length is in ticks (milliseconds),but we want a TimeSlice for each quarter of a beat (a 16th note, generally)
         # (.25 beats/TimeSlice * 60000 ticks/minute) / (tempo bpm) ==> ticks per TimeSlice
         tickIncrement = 125     # default to 120 bpm
         if rcff.tempo != 0:
-            tickIncrement = 15000 / (rcff.tempo)
+            tickIncrement = int(15000 / (rcff.tempo))
 
+        # Begin note
+        rcff.add_time_slice_to_body(TimeSlice(pitch, volume, 9))
         for i in range(0, length, tickIncrement):
->>>>>>> 6cb113bc740c0e1bfb2bfa3ba105b481481ba5eb
+            # Sustain note
+            rcff.add_time_slice_to_body(TimeSlice(pitch, volume, 0))
+        # End note
+        rcff.add_time_slice_to_body(TimeSlice(pitch, volume, 8))
 
-            #TODO: BUG 1.7
-           # if i == 0:
-                #rcff.add_time_slice_to_body(TimeSlice(pitch, volume, 9))
-            #else:
-                #rcff.add_time_slice_to_body(TimeSlice(pitch, volume, 0))
-
-<<<<<<< HEAD
-            #TODO: BUG 1.5
-
-=======
->>>>>>> 6cb113bc740c0e1bfb2bfa3ba105b481481ba5eb
         return rcff
