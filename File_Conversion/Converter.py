@@ -4,14 +4,15 @@ import midi
 
 from RCFF import RCFF
 from TimeSlice import TimeSlice
+
 REST = 8
-SUSTAINED=0
-BEGIN =9
-MIN_SINGLE_VOICE_RANGE=57
-MAX_SINGLE_VOICE_RANGE=80
+SUSTAINED = 0
+BEGIN = 9
+MIN_SINGLE_VOICE_RANGE = 57
+MAX_SINGLE_VOICE_RANGE = 80
+
 
 class Converter:
-
     def __init__(self, midi_file):
         self.__midi_file = midi_file
 
@@ -26,28 +27,29 @@ class Converter:
         rcff_files = []
 
         num_tracks = 0
+
         tempo = self.__extract_tempo__(self.__pattern[0])
         print(tempo)
         for track in self.__pattern:
             print("track")
             num_tracks += 1
 
-            new_rcff = self.__create_rcff_file__(track,tempo)
+            new_rcff = self.__create_rcff_file__(track, tempo)
 
             # TODO: BUG 1.2
-            if ( new_rcff.check_for_excessive_rest):
+            if new_rcff.check_for_excessive_rest():
                 rcff_files.append(new_rcff)
 
         return rcff_files
 
-    def __create_rcff_file__(self, track,tempo):
+    def __create_rcff_file__(self, track, tempo):
         instrument = -1
         notes = []
         try:
             instrument, notes = self.__extract_data__(track)
 
             # TODO: BUG 1.2
-            #print tempo
+            # print tempo
         except RuntimeError as e:
             print(e.message)
             pass
@@ -61,7 +63,7 @@ class Converter:
 
     @staticmethod
     def __extract_tempo__(track):
-       for event in track:
+        for event in track:
             if type(event) is midi.SetTempoEvent:
                 return event.get_bpm()
 
@@ -69,7 +71,7 @@ class Converter:
     def __extract_data__(track):
         notes = []  # [(time, length, pitch, velocity)]
         time = 0
-        #tempo = 0
+        # tempo = 0
         pitch_started = {}
         volume = -1
         instrument = -1
@@ -103,8 +105,6 @@ class Converter:
                     notes.append((time, length, event.pitch, volume))
                 except KeyError:
                     pass
-            #if type(event) is midi.SetTempoEvent:
-                #tempo = event.get_bpm()
 
         return instrument, notes
 
@@ -114,16 +114,20 @@ class Converter:
 
         # note length is in ticks (milliseconds),but we want a TimeSlice for each quarter of a beat (a 16th note, generally)
         # (.25 beats/TimeSlice * 60000 ticks/minute) / (tempo bpm) ==> ticks per TimeSlice
-        tickIncrement = 125     # default to 120 bpm
-        if rcff.tempo != 0:
-            tickIncrement = int(15000 / (rcff.tempo))
-
-        # Begin note
+        tickIncrement = 125  # default to 120 bpm
+        if rcff.tempo <> 0:
+            tickIncrement = 15000 / (rcff.tempo)
         rcff.add_time_slice_to_body(TimeSlice(pitch, volume, 9))
-        for i in range(0, length, tickIncrement):
-            # Sustain note
+        for i in range(0, int(round(length / tickIncrement))):
             rcff.add_time_slice_to_body(TimeSlice(pitch, volume, 0))
-        # End note
         rcff.add_time_slice_to_body(TimeSlice(pitch, volume, 8))
+
+        # for i in range(0, length, tickIncrement):
+
+        # TODO: BUG 1.7
+        # if i == 0:
+        # rcff.add_time_slice_to_body(TimeSlice(pitch, volume, 9))
+        # else:
+        # rcff.add_time_slice_to_body(TimeSlice(pitch, volume, 0))
 
         return rcff
