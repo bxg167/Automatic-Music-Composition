@@ -3,11 +3,8 @@ import os
 import midi
 
 from RCFF import RCFF
-from TimeSlice import TimeSlice
+from TimeSlice import *
 
-REST = 8
-SUSTAINED = 0
-BEGIN = 9
 MIN_SINGLE_VOICE_RANGE = 57
 MAX_SINGLE_VOICE_RANGE = 80
 
@@ -57,7 +54,14 @@ class Converter:
         # This will allow us to test for 2.1.8 automatically, if not, then we can just run this test case manually
         new_rcff = RCFF(self.__midi_file, tempo, instrument)
 
-        for note in notes:
+        Converter.__add_rest_before_first_note__(new_rcff, notes)
+
+        for note_pos in range(0, len(notes)):
+            note = notes[note_pos]
+            if note_pos > 0:
+                last_note = notes[note_pos - 1]
+                self.__create_rest_time_slices__(new_rcff, last_note, note)
+
             new_rcff = self.__create_time_slices_from_note__(new_rcff, note)
         return new_rcff
 
@@ -76,9 +80,8 @@ class Converter:
         volume = -1
         instrument = -1
         found_instrument = False
+
         for event in track:
-            # Used to find event types for tests.
-            # print event
             time += event.tick
             if not found_instrument and (type(event) is midi.ProgramChangeEvent):
                 found_instrument = True
@@ -99,30 +102,32 @@ class Converter:
 
             if type(event) is midi.NoteOffEvent:
                 # print("c")
-                try:
+                if event.pitch in pitch_started:
                     start_time = pitch_started[event.pitch]
                     length = time - start_time
                     notes.append((time, length, event.pitch, volume))
-                except KeyError:
-                    pass
+                    pitch_started.pop(event.pitch)
 
         return instrument, notes
+
+    @staticmethod
+    def __create_time_slice__(rcff, num_timeslices, pitch, volume, timeslice_type):
+        rcff.add_time_slice_to_body(TimeSlice(pitch, volume, BEGIN))
+
+        for i in range(0, num_timeslices):
+            rcff.add_time_slice_to_body(TimeSlice(pitch, volume, timeslice_type))
+
+        rcff.add_time_slice_to_body(TimeSlice(pitch, volume, END))
+
+        return rcff
 
     @staticmethod
     def __create_time_slices_from_note__(rcff, note):
         time, length, pitch, volume = note
 
-        # note length is in ticks (milliseconds),but we want a TimeSlice for each quarter of a beat (a 16th note, generally)
-        # (.25 beats/TimeSlice * 60000 ticks/minute) / (tempo bpm) ==> ticks per TimeSlice
-        tickIncrement = 125  # default to 120 bpm
-        if rcff.tempo <> 0:
-            tickIncrement = 15000 / (rcff.tempo)
-        rcff.add_time_slice_to_body(TimeSlice(pitch, volume, 9))
-        for i in range(0, int(round(length / tickIncrement))):
-            rcff.add_time_slice_to_body(TimeSlice(pitch, volume, 0))
-        rcff.add_time_slice_to_body(TimeSlice(pitch, volume, 8))
+        tick_increment = Converter.__get_tick_increment__(rcff)
 
-        # for i in range(0, length, tickIncrement):
+        rcff = Converter.__create_time_slice__(rcff, int(length / tick_increment), pitch, volume, BEAT)
 
         # TODO: BUG 1.7
         # if i == 0:
@@ -131,3 +136,42 @@ class Converter:
         # rcff.add_time_slice_to_body(TimeSlice(pitch, volume, 0))
 
         return rcff
+
+    @staticmethod
+    def __create_rest_time_slices__(rcff, previous_note, next_note):
+        prev_time, prev_length, prev_pitch, prev_volume = previous_note
+        next_time, next_length, next_pitch, next_volume = next_note
+
+        rest_start_time = prev_time
+        rest_end_time = next_time - next_length
+
+        length = rest_end_time - rest_start_time
+
+        if length > 0:
+            tick_increment = Converter.__get_tick_increment__(rcff)
+            rcff = Converter.__create_time_slice__(rcff, int(length / tick_increment), 0, 0, REST)
+
+        return rcff
+
+    @staticmethod
+    def __add_rest_before_first_note__(rcff, notes):
+        if len(notes) == 0:
+            return
+
+        time, length, pitch, volume = notes[0]
+
+        # The time variable indicates the time the song is at after the note has been played (length of note).
+        if time != length:
+            tick_increment = Converter.__get_tick_increment__(rcff)
+            rcff = Converter.__create_time_slice__(rcff, int(time / tick_increment), 0, 0, REST)
+
+        return rcff
+
+    @staticmethod
+    def __get_tick_increment__(rcff):
+        # note length is in ticks (milliseconds),but we want a TimeSlice for each quarter of a beat (a 16th note, generally)
+        # (.25 beats/TimeSlice * 60000 ticks/minute) / (tempo bpm) ==> 15000 ticks per TimeSlice
+        tick_increment = 125  # default to 120 bpm
+        if rcff.tempo != 0:
+            tick_increment = 15000 / rcff.tempo
+        return tick_increment

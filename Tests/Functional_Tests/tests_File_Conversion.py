@@ -15,11 +15,13 @@ class FileConversionFunctionalTests(TestCase):
         rcff_files = self.create_rcff_files("Sax.mid")
 
         num_notes = 16
+        # 1 for BEGIN, 1 for BEAT (Each beat is a 16th note) and 1 for END
+        expected_num_timeslices_per_note = 3
 
         # TODO: BUG 1.1
         self.assertEquals(1, len(rcff_files))
         self.assertEquals(SAX_INSTRUMENT_ID, rcff_files[0].instrument)
-        self.assertEquals(num_notes, len(rcff_files[0].body))
+        self.assertEquals(num_notes * expected_num_timeslices_per_note, len(rcff_files[0].body))
 
         # TODO: BUG 1.3
         # TODO: BUG 1.1
@@ -59,17 +61,14 @@ class FileConversionFunctionalTests(TestCase):
 
     # Case 2.1.6
     def test_midi_format_type_0(self):
-        expected_rcff_files_created = 1
         expected_num_notes = 8
 
-        # 1 for start, 1 for sustained and 1 for end
-        expected_num_timeslices_per_note = 3
+        # 1 for BEGIN, 2 for BEAT (Each beat is a 8th note) and 1 for END
+        expected_num_timeslices_per_note = 4
 
-        rcff_files = self.create_rcff_files( "SaxFormat0.mid")
+        rcff_files = self.create_rcff_files("SaxFormat0.mid")
 
-        sax_rcff = rcff_files[0]
-
-        self.assertEquals(expected_rcff_files_created, len(rcff_files))
+        self.assertEquals(1, len(rcff_files))
 
         sax_rcff = rcff_files[0]
 
@@ -78,41 +77,39 @@ class FileConversionFunctionalTests(TestCase):
         self.assertEquals(expected_num_notes * expected_num_timeslices_per_note, len(sax_rcff.body))
 
         self.assertEquals(150, sax_rcff.tempo)
-
-        if expected_rcff_files_created == 2:
-            oboe_rcff = rcff_files[1]
-            self.assertEquals(OBOE_INSTRUMENT_ID, oboe_rcff.instrument)
-            self.assertEquals(expected_num_notes, len(oboe_rcff.body))
-
-            self.assertEquals(150, oboe_rcff.tempo)
 
     # Case 2.1.7a
     def test_midi_format_type_1(self):
-        expected_rcff_files_created = 2
         expected_num_notes = 12
+        expected_num_rests = 1
 
-        # 1 for start, 1 for sustained and 1 for end
+        # 1 for BEGIN, 1 for BEAT (the beats are each a 16th note) and 1 for END
         expected_num_timeslices_per_note = 3
+
+        # 1 for BEGIN, 4 for REST (each rest is considered to be a 1/16th note) and 1 for END
+        expected_num_timeslices_per_rest = 6
 
         rcff_files = self.create_rcff_files("OboeAndSaxFormat1.mid")
 
-        self.assertEquals(expected_rcff_files_created, len(rcff_files))
+        self.assertEquals(2, len(rcff_files))
 
         sax_rcff = rcff_files[0]
 
         self.assertEquals(SAX_INSTRUMENT_ID, sax_rcff.instrument)
 
-
-        self.assertEquals(expected_num_notes * expected_num_timeslices_per_note, len(sax_rcff.body))
+        self.assertEquals(expected_num_notes * expected_num_timeslices_per_note +
+                          expected_num_rests * expected_num_timeslices_per_rest
+                          , len(sax_rcff.body))
 
         self.assertEquals(150, sax_rcff.tempo)
 
-        if expected_rcff_files_created == 2:
-            oboe_rcff = rcff_files[1]
-            self.assertEquals(OBOE_INSTRUMENT_ID, oboe_rcff.instrument)
-            self.assertEquals(expected_num_notes * LENGTH_OF_NOTE, len(oboe_rcff.body))
+        oboe_rcff = rcff_files[1]
+        self.assertEquals(OBOE_INSTRUMENT_ID, oboe_rcff.instrument)
+        self.assertEquals(expected_num_notes * expected_num_timeslices_per_note +
+                          expected_num_rests * expected_num_timeslices_per_rest,
+                          len(oboe_rcff.body))
 
-            self.assertEquals(150, oboe_rcff.tempo)
+        self.assertEquals(150, oboe_rcff.tempo)
 
     # Test  case 2.1.7b cancelled for now (Apparently, these are tough to find/make)
     # ["2", "OboeAndSaxFormat2.mid", 2, 12],  # Case 2.1.7b
