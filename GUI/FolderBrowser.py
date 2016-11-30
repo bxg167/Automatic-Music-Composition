@@ -31,7 +31,7 @@ class FolderBrowser(Toplevel):
 
         self.add_button()
 
-        self.working_directory = "."
+        self.working_directory = ".."
         self.fill(self.working_directory)
 
     def move_selection(self, movement):

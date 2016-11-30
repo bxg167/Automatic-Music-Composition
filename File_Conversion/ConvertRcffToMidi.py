@@ -74,17 +74,20 @@ class ConvertRcffToMidi:
 
 # The run function does the work that the gui should do: It collects a path for an rcff, makes an RCFF object,
 # creates a midi file from it, and saves that midi in a file
-def run(rcff_file_path, save_in_dir_path):
+
+def run(rcff_file_path, new_midi_location):
     c = ConvertRcffToMidi(rcff_file_path)
     midi_object = c.create_midi()
+
     # The midi file should be written from the GUI, just as rcff files are. For now, we'll leave it here
-    midi.write_midifile(os.path.join(save_in_dir_path, "example.mid"), midi_object)
-    # TODO: Check that we don't override midi files
+    if not os.path.exists(new_midi_location):
+        midi.write_midifile(new_midi_location, midi_object)
+
 
 
 # hardcoded right now, sorry
-run("C:\\Users\\Cassidy\\PycharmProjects\\Automatic-Music-Composition\\RCFF_Test\\RCFF_Files\\output_4notes_1.rcff",
-    "C:\\Users\\Cassidy\\PycharmProjects\\Automatic-Music-Composition\\RCFF_Test\\RCFF_Files")
+# run("C:\\Users\\Cassidy\\PycharmProjects\\Automatic-Music-Composition\\RCFF_Test\\RCFF_Files\\output_4notes_1.rcff",
+#     "C:\\Users\\Cassidy\\PycharmProjects\\Automatic-Music-Composition\\RCFF_Test\\RCFF_Files")
 
 
 # CONSIDERATIONS
