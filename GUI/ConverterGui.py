@@ -13,6 +13,7 @@ import sys
 
 CURRENT_DIRECTORY = os.path.dirname(__file__)
 sys.path.append(CURRENT_DIRECTORY + "..")
+sys.path.append(CURRENT_DIRECTORY)
 print CURRENT_DIRECTORY
 
 from File_Conversion import Converter
