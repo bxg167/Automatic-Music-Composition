@@ -22,6 +22,7 @@ import pip
 
 def install():
     pip.main(['install', 'python-midi'])
+install()
 
 MIN_HEIGHT = 125
 MIN_WIDTH = 260
