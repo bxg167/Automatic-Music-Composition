@@ -22,8 +22,6 @@ import pip
 def install():
     pip.main(['install', 'python-midi'])
 
-install()
-
 MIN_HEIGHT = 125
 MIN_WIDTH = 260
 
@@ -59,10 +57,17 @@ def run():
     action_buttons.set_running()
 
     file_queue = Queue(False)
-    for name in os.listdir(folder_dir):
-        path = os.path.join(folder_dir, name)
-        if os.path.isfile(path) and name.endswith(".mid"):
-            file_queue.put(name)
+    folder_queue = Queue(False)
+    folder_queue.put(folder_dir)
+
+    while not folder_queue.empty():
+        folder = folder_queue.get()
+        for name in os.listdir(folder):
+            path = os.path.join(folder, name)
+            if os.path.isfile(path) and name.endswith(".mid"):
+                file_queue.put(path)
+            elif os.path.isdir(path):
+                folder_queue.put(path)
 
     i = 0
     max_size = file_queue.qsize()
@@ -73,12 +78,14 @@ def run():
 
     isError = False
     while action_buttons.is_running and max_size > i:
-        file_name = file_queue.get(False)
+        file_path = file_queue.get(False)
+        file_name = os.path.basename(file_path)
+        file_dir = os.path.dirname(file_path)
         label.config(text="Current File: " + file_name)
         progress_bar.set_percentage(i / float(max_size + 1))
         i += 1
 
-        if Mediator.convert_file(file_name, folder_dir) == TypeError:
+        if Mediator.convert_file(file_name, file_dir) == TypeError:
             isError = True
 
     if action_buttons.is_running:

@@ -7,6 +7,8 @@ from File_Conversion.Converter import Converter
 
 
 class Mediator:
+    def __init__(self):
+        a = 1
 
     @staticmethod
     def convert_file(file_name, folder_dir):
