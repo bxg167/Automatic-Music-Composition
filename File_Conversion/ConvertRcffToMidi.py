@@ -1,6 +1,7 @@
 import os
 
 import midi
+import TimeSlice
 
 from RCFF import RCFF
 
@@ -29,46 +30,48 @@ class ConvertRcffToMidi:
         pattern.append(track)
 
         # Assign instrument information. If we don't do this, it would default to piano
-        inst = midi.ProgramChangeEvent(value=r.instrument)
-        track.append(inst)
+        if r.instrument > 0:
+            inst = midi.ProgramChangeEvent(value=r.instrument)
+            track.append(inst)
 
         # counters for loop
-        last_message = -1
         slice_count = 0
         pitch = 60  # Concert C
+        volume = 0
         # see ticks/slice explanation in Converter.__create_time_slices_from_note__
-        ticks_per_time_slice = 125     # set default to 120 bpm
+        ticks_per_time_slice = 110     # set default to 136 bpm because all the midis feel slow at 120 bpm
         if r.tempo > 0:
             ticks_per_time_slice = int(15000 / r.tempo)
 
         # Iterate over timeslices in RCFF, creating midi note events as appropriate
+        # print "volume\tpitch\tmessage"
         for timeSlice in r.body:
-            if timeSlice.message == 9:
-                # we're at a new note, so we should write the old one off
-                if last_message != -1:
-                    # Instantiate a MIDI note off event, append it to the track
-                    net_ticks = slice_count * ticks_per_time_slice
-                    off = midi.NoteOffEvent(tick=net_ticks, pitch=pitch)
-                    track.append(off)
-                # now start the new note
-                pitch = timeSlice.pitch
-                slice_count = 1
-                # Instantiate a MIDI note on event, append it to the track
-                on = midi.NoteOnEvent(tick=0, velocity=timeSlice.volume, pitch=pitch)
+            # print timeSlice.volume, "\t", timeSlice.pitch, "\t\t", timeSlice.message
+            if timeSlice.message == TimeSlice.BEGIN:
+                # Set up tracking variables
+                slice_count = 0
+            elif timeSlice.message == TimeSlice.END:
+                # Create NoteOnEvent for the note now that we know the volume and pitch
+                on = midi.NoteOnEvent(tick=0, velocity=volume, pitch=pitch)
                 track.append(on)
-            else:   # message==0, the note is being sustained
+                # Calculate note length based on tracking variable
+                length = slice_count * ticks_per_time_slice
+                # Add corresponding NoteOffEvent after appropriate ticks
+                off = midi.NoteOffEvent(tick=length, pitch=pitch)
+                track.append(off)
+            elif timeSlice.message == TimeSlice.BEAT:
                 slice_count += 1
-            last_message = timeSlice.message
-
-        # After the last timeSlice is read, add one last off event
-        net_ticks = slice_count * ticks_per_time_slice
-        off = midi.NoteOffEvent(tick=net_ticks, pitch=pitch)
-        track.append(off)
+                pitch = timeSlice.pitch
+                volume = timeSlice.volume
+            else:   # timeSlice.message == TimeSlice.REST
+                slice_count += 1
+                volume = 0
 
         # Signal the end of the track
         eot = midi.EndOfTrackEvent(tick=1)
         track.append(eot)
 
+        # print(pattern)
         return pattern
 
 
@@ -83,11 +86,11 @@ def run(rcff_file_path, new_midi_location):
     if not os.path.exists(new_midi_location):
         midi.write_midifile(new_midi_location, midi_object)
 
-
-
 # hardcoded right now, sorry
-# run("C:\\Users\\Cassidy\\PycharmProjects\\Automatic-Music-Composition\\RCFF_Test\\RCFF_Files\\output_4notes_1.rcff",
-#     "C:\\Users\\Cassidy\\PycharmProjects\\Automatic-Music-Composition\\RCFF_Test\\RCFF_Files")
+# run("C:\\Users\\Cassidy\\PycharmProjects\\Automatic-Music-Composition\\RCFF_Test\\RCFF_Files\\output_4notes_0.rcff",
+#     "C:\\Users\\Cassidy\\PycharmProjects\\Automatic-Music-Composition\\RCFF_Test\\RCFF_Files\\converted4.mid")
+# run("C:\\Users\\Cassidy\\PycharmProjects\\Automatic-Music-Composition\\2\\3_RCFF_Files\\3ravens3_0.rcff",
+#     "C:\\Users\\Cassidy\\PycharmProjects\\Automatic-Music-Composition\\2\\3_RCFF_Files\\3ravens3_0.mid")
 
 
 # CONSIDERATIONS
