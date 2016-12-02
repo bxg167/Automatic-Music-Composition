@@ -4,12 +4,18 @@ from Tkinter import *
 import errno
 
 from ActionButtons import ActionButtons
-from File_Conversion.Converter import Converter
 from PopUp import PopUp
 from ProgressBar import ProgressBar
 from PathEntry import PathEntry
 
 import os
+import sys
+
+CURRENT_DIRECTORY = os.path.dirname(__file__)
+sys.path.append(CURRENT_DIRECTORY + "..")
+print CURRENT_DIRECTORY
+
+from File_Conversion.Converter import Converter
 
 MIN_HEIGHT = 125
 MIN_WIDTH = 260
@@ -68,7 +74,7 @@ def run():
     if action_buttons.is_running:
         progress_bar.set_percentage(1)
         label.config(text="Finished")
-        
+
     action_buttons.set_not_running()
 
 
