@@ -85,7 +85,7 @@ def run():
         progress_bar.set_percentage(i / float(max_size + 1))
         i += 1
 
-        if Mediator.convert_file(file_name, file_dir) == TypeError:
+        if Mediator.convert_file(file_name, file_dir) == Exception:
             isError = True
 
     if action_buttons.is_running:
