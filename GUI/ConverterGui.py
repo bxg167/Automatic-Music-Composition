@@ -15,7 +15,13 @@ CURRENT_DIRECTORY = os.path.dirname(__file__)
 sys.path.append(CURRENT_DIRECTORY + "..")
 print CURRENT_DIRECTORY
 
-from File_Conversion.Converter import Converter
+from File_Conversion import Converter
+
+import pip
+
+
+def install():
+    pip.main(['install', 'python-midi'])
 
 MIN_HEIGHT = 125
 MIN_WIDTH = 260
@@ -79,7 +85,7 @@ def run():
 
 
 def convert_file(file_name, folder_dir):
-    c = Converter(os.path.join(folder_dir, file_name))
+    c = Converter.Converter(os.path.join(folder_dir, file_name))
     rcff_files = c.create_rcff_files()
 
     i = 0
