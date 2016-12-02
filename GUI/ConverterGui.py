@@ -23,6 +23,7 @@ import pip
 
 def install():
     pip.main(['install', 'python-midi'])
+
 install()
 
 MIN_HEIGHT = 125
@@ -72,23 +73,34 @@ def run():
         p = PopUp("There are no midis in this folder.")
         action_buttons.set_not_running()
 
+    isError = False
     while action_buttons.is_running and max_size > i:
         file_name = file_queue.get(False)
         label.config(text="Current File: " + file_name)
         progress_bar.set_percentage(i / float(max_size + 1))
         i += 1
-        convert_file(file_name, folder_dir)
+
+        if convert_file(file_name, folder_dir) == TypeError:
+            isError = True
 
     if action_buttons.is_running:
         progress_bar.set_percentage(1)
-        label.config(text="Finished")
+
+        if not isError:
+            label.config(text="Finished.")
+        else:
+            label.config(text="Finished With Errors.")
 
     action_buttons.set_not_running()
 
 
 def convert_file(file_name, folder_dir):
-    c = Converter.Converter(os.path.join(folder_dir, file_name))
-    rcff_files = c.create_rcff_files()
+    try:
+        c = Converter.Converter(os.path.join(folder_dir, file_name))
+        rcff_files = c.create_rcff_files()
+    except TypeError:
+        return TypeError
+
 
     i = 0
 
@@ -101,8 +113,10 @@ def convert_file(file_name, folder_dir):
         file_handler = open(os.path.join(new_folder_dir, new_file_name), "w")
 
         rcff_file.pickle(file_handler)
-        i += 1
 
+        file_handler.close()
+        i += 1
+    return NoneType
 
 def try_create_dir(new_dir):
     try:
