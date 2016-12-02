@@ -1,9 +1,9 @@
 from Queue import Queue
 from Tkinter import *
 
-import errno
-
 from ActionButtons import ActionButtons
+from GUI import Mediator
+from GUI.Mediator import Mediator
 from PopUp import PopUp
 from ProgressBar import ProgressBar
 from PathEntry import PathEntry
@@ -15,8 +15,6 @@ CURRENT_DIRECTORY = os.path.dirname(__file__)
 sys.path.append(CURRENT_DIRECTORY + "..")
 sys.path.append(CURRENT_DIRECTORY)
 print CURRENT_DIRECTORY
-
-from File_Conversion import Converter
 
 import pip
 
@@ -80,7 +78,7 @@ def run():
         progress_bar.set_percentage(i / float(max_size + 1))
         i += 1
 
-        if convert_file(file_name, folder_dir) == TypeError:
+        if Mediator.convert_file(file_name, folder_dir) == TypeError:
             isError = True
 
     if action_buttons.is_running:
@@ -92,38 +90,6 @@ def run():
             label.config(text="Finished With Errors.")
 
     action_buttons.set_not_running()
-
-
-def convert_file(file_name, folder_dir):
-    try:
-        c = Converter.Converter(os.path.join(folder_dir, file_name))
-        rcff_files = c.create_rcff_files()
-    except TypeError:
-        return TypeError
-
-
-    i = 0
-
-    new_folder_dir = os.path.join(folder_dir, "RCFF_Files")
-    try_create_dir(new_folder_dir)
-
-    for rcff_file in rcff_files:
-        new_file_name = os.path.splitext(file_name)[0] + "_" + str(i) + ".rcff"
-
-        file_handler = open(os.path.join(new_folder_dir, new_file_name), "w")
-
-        rcff_file.pickle(file_handler)
-
-        file_handler.close()
-        i += 1
-    return NoneType
-
-def try_create_dir(new_dir):
-    try:
-        os.makedirs(new_dir)
-    except OSError as exception:
-        if exception.errno != errno.EEXIST:
-            raise
 
 
 def stop():
