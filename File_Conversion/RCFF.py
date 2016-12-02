@@ -22,7 +22,7 @@ class RCFF:
                 beat_count += 1
             elif body_slice.message == REST:
                 rest_count += 1
-        return beat_count >= rest_count and beat_count != 0
+        return beat_count >= rest_count / 2 and beat_count != 0
 
     def pickle(self, file_handler):
         pickle.dump(self, file_handler)
