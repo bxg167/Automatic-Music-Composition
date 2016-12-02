@@ -16,7 +16,11 @@ class Converter:
         self.__pattern = []
 
         if os.path.isfile(midi_file):
-            self.__pattern = midi.read_midifile(self.__midi_file)
+            file_handler = open(midi_file)
+            self.__pattern = midi.read_midifile(file_handler)
+
+            file_handler.close()
+
         else:
             raise Exception("The file passed doesn't exist")
 
