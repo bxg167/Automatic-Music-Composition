@@ -17,11 +17,14 @@ class RCFF:
         beat_count = 0
         rest_count = 0
 
+        # print("volume\tpitch\tmessage")
         for body_slice in self.body:
+            # print body_slice.volume, "\t", body_slice.pitch, "\t", body_slice.message
             if body_slice.message == BEAT:
                 beat_count += 1
             elif body_slice.message == REST:
                 rest_count += 1
+        # print "beats: " + str(beat_count) + "; rests: " + str(rest_count)
         return beat_count >= rest_count / 2 and beat_count != 0
 
     def pickle(self, file_handler):

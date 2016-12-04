@@ -1,6 +1,7 @@
 import os
 
 import midi
+import math
 
 from RCFF import RCFF
 from TimeSlice import *
@@ -16,11 +17,8 @@ class Converter:
         self.__pattern = []
 
         if os.path.isfile(midi_file):
-            file_handler = open(midi_file)
-            self.__pattern = midi.read_midifile(file_handler)
-
-            file_handler.close()
-
+            self.__pattern = midi.read_midifile(self.__midi_file)
+            # print(self.__pattern)
         else:
             raise Exception("The file passed doesn't exist")
 
@@ -30,9 +28,10 @@ class Converter:
         num_tracks = 0
 
         tempo = self.__extract_tempo__(self.__pattern[0])
-        print(tempo)
+        print("tempo: " + str(tempo))
+
         for track in self.__pattern:
-            print("track")
+            print("\nNEXT TRACK")
             num_tracks += 1
 
             new_rcff = self.__create_rcff_file__(track, tempo)
@@ -40,6 +39,9 @@ class Converter:
             # TODO: BUG 1.2
             if new_rcff.check_for_excessive_rest():
                 rcff_files.append(new_rcff)
+                print "RCFF successfully created"
+            else:
+                print "FAILED: RCFF not generated"
 
         return rcff_files
 
@@ -62,6 +64,7 @@ class Converter:
 
         for note_pos in range(0, len(notes)):
             note = notes[note_pos]
+            # print "note", note
             if note_pos > 0:
                 last_note = notes[note_pos - 1]
                 self.__create_rest_time_slices__(new_rcff, last_note, note)
@@ -103,6 +106,7 @@ class Converter:
             if type(event) is midi.NoteOnEvent:
                 pitch_started[event.pitch] = time
                 volume = event.get_velocity.im_self.velocity
+                # TODO: Some MIDIs only used OnEvents.
 
             if type(event) is midi.NoteOffEvent:
                 # print("c")
@@ -117,7 +121,6 @@ class Converter:
     @staticmethod
     def __create_time_slice__(rcff, num_timeslices, pitch, volume, timeslice_type):
         rcff.add_time_slice_to_body(TimeSlice(pitch, volume, BEGIN))
-
         for i in range(0, num_timeslices):
             rcff.add_time_slice_to_body(TimeSlice(pitch, volume, timeslice_type))
 
@@ -130,8 +133,14 @@ class Converter:
         time, length, pitch, volume = note
 
         tick_increment = Converter.__get_tick_increment__(rcff)
+        num_slices = int(math.ceil(length / tick_increment))
 
-        rcff = Converter.__create_time_slice__(rcff, int(length / tick_increment), pitch, volume, BEAT)
+        # Notes with 0 volume are secretly rests. Does that actually matter?
+        note_type = BEAT
+        if volume == 0:
+            note_type = REST
+
+        rcff = Converter.__create_time_slice__(rcff, num_slices, pitch, volume, note_type)
 
         # TODO: BUG 1.7
         # if i == 0:
@@ -150,10 +159,10 @@ class Converter:
         rest_end_time = next_time - next_length
 
         length = rest_end_time - rest_start_time
-
         if length > 0:
             tick_increment = Converter.__get_tick_increment__(rcff)
-            rcff = Converter.__create_time_slice__(rcff, int(length / tick_increment), 0, 0, REST)
+            num_slices = int(math.ceil(length / tick_increment))
+            rcff = Converter.__create_time_slice__(rcff, num_slices, 0, 0, REST)
 
         return rcff
 
@@ -167,7 +176,8 @@ class Converter:
         # The time variable indicates the time the song is at after the note has been played (length of note).
         if time != length:
             tick_increment = Converter.__get_tick_increment__(rcff)
-            rcff = Converter.__create_time_slice__(rcff, int(time / tick_increment), 0, 0, REST)
+            num_slices = int(math.ceil(length / tick_increment))
+            rcff = Converter.__create_time_slice__(rcff, num_slices, 0, 0, REST)
 
         return rcff
 
