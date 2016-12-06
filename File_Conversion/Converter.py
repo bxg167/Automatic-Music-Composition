@@ -1,3 +1,4 @@
+from __future__ import print_function
 import os
 
 import midi
@@ -39,9 +40,9 @@ class Converter:
             # TODO: BUG 1.2
             if new_rcff.check_for_excessive_rest():
                 rcff_files.append(new_rcff)
-                print "RCFF successfully created"
+                print("RCFF successfully created")
             else:
-                print "FAILED: RCFF not generated"
+                print("FAILED: RCFF not generated")
 
         return rcff_files
 
@@ -52,7 +53,7 @@ class Converter:
             instrument, notes = self.__extract_data__(track)
 
             # TODO: BUG 1.2
-            # print tempo
+            # print(tempo)
         except RuntimeError as e:
             print(e.message)
             pass
@@ -64,7 +65,7 @@ class Converter:
 
         for note_pos in range(0, len(notes)):
             note = notes[note_pos]
-            # print "note", note
+            # print("note", note)
             if note_pos > 0:
                 last_note = notes[note_pos - 1]
                 self.__create_rest_time_slices__(new_rcff, last_note, note)
