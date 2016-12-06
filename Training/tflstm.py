@@ -1,16 +1,12 @@
 import numpy as np
 import tensorflow as tf
+from File_Conversion import RCFF
+from File_Conversion import TimeSlice
+import pickle
+import sys
 
-vector_size = 4
+vector_size = 128
 num_hidden = 64
-
-series1 = [
- [[0,0,0,1],[0,0,1,0],[0,1,0,0],[1,0,0,0]] * 50,
-]
-
-series2 = [
- [[0,0,0,1],[1,0,0,0],[0,1,0,0],[0,0,1,0]] * 50,
-]
 
 series = tf.placeholder(tf.float32, [None, None, vector_size])
 
@@ -35,41 +31,58 @@ saver = tf.train.Saver()
 sess = tf.Session()
 sess.run(init_op)
 
+print('finished init')
+
 
 def train(train_series, num_iters):
-	snapshot_num = 0
-	for i in range(num_iters):
-		for j in range(len(train_series)):
-			this_train_series = train_series[j]
-			sess.run(minimize,{series: [this_train_series]})
-		if i % 100 == 0:	
-			saver.save(sess, "snapshot_" + str(snapshot_num) + ".ckpt")
-			snapshot_num += 1
-	saver.save(sess, "snapshot_last.ckpt")
-	return "snapshot_last.ckpt"
+        train_series = []
+        for timeslice in rcff.body:
+                pitch = int(timeslice.pitch)
+                vec = [0] * 128
+                vec[pitch] = 1
+                train_series.append(vec)
+        train_series = [train_series]
+        snapshot_num = 0
+        for i in range(num_iters):
+                for j in range(len(train_series)):
+                        this_train_series = train_series[j]
+                        sess.run(minimize,{series: [this_train_series]})
+                if i % 10 == 0:
+                        #TODO: delete last temp snapshot
+                        #saver.save(sess, "C:\\temp_snapshot_" + str(snapshot_num))
+                        #snapshot_num += 1
+                        pass
+                print('done iter' + str(i))
+                sys.stdout.flush()
 
-def sample(snapshot_path, num_iters):
-	saver.restore(sess, snapshot_path)
-	seed = [[0,0,0,1],[1,0,0,0]]
-	for i in range(num_iters):
-		result = predict_round.eval(session=sess, feed_dict={series: [seed + [[0,0,0,0]]]})
-		result_last = result[-1,:]
-		seed.append(list(result_last))
-	print(str(seed))
-	seed = [[0,0,0,1],[0,0,1,0]]
-	for i in range(num_iters):
-		result = predict_round.eval(session=sess, feed_dict={series: [seed + [[0,0,0,0]]]})
-		result_last = result[-1,:]
-		seed.append(list(result_last))
-	print(str(seed))
-	
+def save(save_path):
+        saver.save(sess, save_path)
+
+def load(load_path):
+        saver.restore(sess, load_path)
+
+def sample(num_iters, seed=None):
+        if not seed:
+                seed = [[1]*128]
+        for i in range(num_iters):
+                result = predict_round.eval(session=sess, feed_dict={series: [seed + [[0]*128]]})
+                result_last = result[-1,:]
+                seed.append(list(result_last))
+        retval = RCFF.RCFF('generated', 120, 0)
+        for notes in seed:
+                ts = TimeSlice.TimeSlice(notes.index(max(notes)), 1, 1)
+                retval.body.append(ts)
+        return retval
+        
 if __name__ == '__main__':
-	nums = [1,2,4,8,16,32,64,128,256,512,1024,2048,4096,8192,16384,32768]
-	for n in nums:
-		print(n)
-		train(series1, n)
-		sample(7)
-		print(n)
-		train(series2, n)
-		sample(7)
-		print(n)
+        with open('2 Funky 2 - Brothers & Sisters_0.rcff', 'rb') as rcff_file:
+                rcff = pickle.load(rcff_file)
+                print('unpickled')
+                sys.stdout.flush()
+                train(rcff, 2)
+                print('trained')
+                sys.stdout.flush()
+                samp = sample(50)
+                print('sampled')
+                print(samp)
+                sys.stdout.flush()
