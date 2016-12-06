@@ -7,13 +7,14 @@ from RCFF import RCFF
 
 
 class ConvertRcffToMidi:
-    def __init__(self, rcff_file):
+    def __init__(self, rcff_file, instrument=0):
         self.__rcff_file = rcff_file
 
         self.__rcff = []
 
         if os.path.isfile(rcff_file):
             self.__rcff = RCFF.unpickle(open(self.__rcff_file))
+            self.__rcff.instrument = instrument
         else:
             raise Exception("The file passed doesn't exist")
 
