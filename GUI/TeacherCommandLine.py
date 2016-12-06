@@ -7,7 +7,7 @@ DEFAULT_RNN_SNAPSHOT_NAME = "default.snapshot"
 
 
 def print_error_and_terminate(error_message):
-    print error_message
+    print(error_message)
     sys.exit()
 
 
@@ -79,6 +79,6 @@ for rcff_file in rcff_files:
         dummy_file = open(save, 'w')
 
 
-    print "Current File: " + file_name
+    print("Current File: " + file_name)
 
-print "\nSuccessful input."
+print("\nSuccessful input.")
