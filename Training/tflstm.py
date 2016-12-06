@@ -61,7 +61,7 @@ def save(save_path):
 def load(load_path):
         saver.restore(sess, load_path)
 
-def sample(num_iters, seed=None):
+def sample(rcff_dest_path, num_iters, seed=None):
         if not seed:
                 seed = [[1]*128]
         for i in range(num_iters):
@@ -72,6 +72,8 @@ def sample(num_iters, seed=None):
         for notes in seed:
                 ts = TimeSlice.TimeSlice(notes.index(max(notes)), 1, 1)
                 retval.body.append(ts)
+        with open(rcff_dest_path, 'wb') as rcff_dest_file:
+                retval.pickle(rcff_dest_file)
         return retval
         
 if __name__ == '__main__':
@@ -82,7 +84,7 @@ if __name__ == '__main__':
                 train(rcff, 2)
                 print('trained')
                 sys.stdout.flush()
-                samp = sample(50)
+                samp = sample('destfile.rcff', 50)
                 print('sampled')
                 print(samp)
                 sys.stdout.flush()
