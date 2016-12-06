@@ -32,7 +32,7 @@ class Mediator:
         for rcff_file in rcff_files:
             new_file_name = os.path.splitext(file_name)[0] + "_" + str(i) + ".rcff"
 
-            file_handler = open(os.path.join(new_folder_dir, new_file_name), "w")
+            file_handler = open(os.path.join(new_folder_dir, new_file_name), "wb")
 
             rcff_file.pickle(file_handler)
 
