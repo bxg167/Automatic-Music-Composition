@@ -28,7 +28,7 @@ class RCFF:
         return beat_count >= rest_count / 2 and beat_count != 0
 
     def pickle(self, file_handler):
-        pickle.dump(self, file_handler)
+        pickle.dump(self, file_handler, protocol=2)
 
     @staticmethod
     def unpickle(file_handler):
