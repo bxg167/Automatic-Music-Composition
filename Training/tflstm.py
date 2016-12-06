@@ -34,7 +34,7 @@ sess.run(init_op)
 print('finished init')
 
 
-def train(train_series, num_iters):
+def train(rcff, num_iters):
         train_series = []
         for timeslice in rcff.body:
                 pitch = int(timeslice.pitch)
@@ -65,7 +65,7 @@ def sample(rcff_dest_path, num_iters, seed=None):
         if not seed:
                 seed = [[1]*128]
         for i in range(num_iters):
-                result = predict_round.eval(session=sess, feed_dict={series: [seed + [[0]*128]]})
+                result = predict_round.eval(session=sess, feed_dict={series: [seed + [[0]*74+[1]+[0]*53]]})
                 result_last = result[-1,:]
                 seed.append(list(result_last))
         retval = RCFF.RCFF('generated', 120, 0)
@@ -81,10 +81,10 @@ if __name__ == '__main__':
                 rcff = pickle.load(rcff_file)
                 print('unpickled')
                 sys.stdout.flush()
-                train(rcff, 2)
+                train(rcff, 50)
                 print('trained')
                 sys.stdout.flush()
-                samp = sample('destfile.rcff', 50)
+                samp = sample('destfile.rcff', 1000)
                 print('sampled')
                 print(samp)
                 sys.stdout.flush()
