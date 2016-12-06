@@ -1,4 +1,4 @@
-from Queue import Queue
+from collections import deque as Queue
 from Tkinter import *
 
 from ActionButtons import ActionButtons
@@ -9,18 +9,12 @@ from ProgressBar import ProgressBar
 from PathEntry import PathEntry
 
 import os
-import sys
-
-CURRENT_DIRECTORY = os.path.dirname(__file__)
-sys.path.append(CURRENT_DIRECTORY + "..")
-sys.path.append(CURRENT_DIRECTORY)
-print CURRENT_DIRECTORY
-
-import pip
-
-
-def install():
-    pip.main(['install', 'python-midi'])
+# import sys
+# import pip
+#
+#
+# def install():
+#     pip.main(['install', 'python-midi'])
 
 MIN_HEIGHT = 125
 MIN_WIDTH = 260
@@ -56,21 +50,21 @@ def run():
 
     action_buttons.set_running()
 
-    file_queue = Queue(False)
-    folder_queue = Queue(False)
-    folder_queue.put(folder_dir)
+    file_queue = Queue()
+    folder_queue = Queue()
+    folder_queue.append(folder_dir)
 
-    while not folder_queue.empty():
-        folder = folder_queue.get()
+    while len(folder_queue) > 0:
+        folder = folder_queue.pop()
         for name in os.listdir(folder):
             path = os.path.join(folder, name)
             if os.path.isfile(path) and name.endswith(".mid"):
-                file_queue.put(path)
+                file_queue.append(path)
             elif os.path.isdir(path):
-                folder_queue.put(path)
+                folder_queue.append(path)
 
     i = 0
-    max_size = file_queue.qsize()
+    max_size = len(file_queue)
 
     if max_size == 0:
         p = PopUp("There are no midis in this folder.")
@@ -78,7 +72,7 @@ def run():
 
     isError = False
     while action_buttons.is_running and max_size > i:
-        file_path = file_queue.get(False)
+        file_path = file_queue.pop()
         file_name = os.path.basename(file_path)
         file_dir = os.path.dirname(file_path)
         label.config(text="Current File: " + file_name)

@@ -4,8 +4,8 @@ import os
 import midi
 import math
 
-from RCFF import RCFF
-from TimeSlice import *
+#from RCFF import RCFF
+#from TimeSlice import *
 
 MIN_SINGLE_VOICE_RANGE = 57
 MAX_SINGLE_VOICE_RANGE = 80
@@ -16,10 +16,11 @@ class Converter:
         self.__midi_file = midi_file
 
         self.__pattern = []
-
         if os.path.isfile(midi_file):
             self.__pattern = midi.read_midifile(self.__midi_file)
             # print(self.__pattern)
+            fr = midi.FileReader()
+            tracks,self.resolution, format= fr.parse_file_header(midi_file) #(tracks=tracks, resolution=resolution, format=format)
         else:
             raise Exception("The file passed doesn't exist")
 
@@ -182,11 +183,12 @@ class Converter:
 
         return rcff
 
-    @staticmethod
-    def __get_tick_increment__(rcff):
+    def __get_tick_increment__(self,rcff):
         # note length is in ticks (milliseconds),but we want a TimeSlice for each quarter of a beat (a 16th note, generally)
         # (.25 beats/TimeSlice * 60000 ticks/minute) / (tempo bpm) ==> 15000 ticks per TimeSlice
-        tick_increment = 125  # default to 120 bpm
-        if rcff.tempo != 0:
-            tick_increment = 15000 / rcff.tempo
-        return tick_increment
+        #Bug 
+        return self.resolution /4
+        #tick_increment = 125  # default to 120 bpm
+        #if rcff.tempo != 0:
+            #tick_increment = 15000 / rcff.tempo
+        #return tick_increment
