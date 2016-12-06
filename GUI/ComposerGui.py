@@ -46,12 +46,15 @@ label.pack(side=LEFT)
 spinbox.pack(side=LEFT)
 second_row.pack(fill=X, expand=YES)
 
+
 #Place holder for actual method
 def start_process(midi_file_location):
     print "Composing: " + midi_file_location
+
+    print path_entry.field.get()
     c = ConvertRcffToMidi(path_entry.field.get())
 
-    #TODO: Send Instrument value.
+    # TODO: Send Instrument value.
     midi_object = c.create_midi()
 
     # The midi file should be written from the GUI, just as rcff files are. For now, we'll leave it here
@@ -72,13 +75,14 @@ def open_save_as():
     else:
         created_text.configure(text="Not Completed.")
 
-
 # ------------------Third Row------------------
-third_row = Frame(window)
-start_button = Button(third_row, text="Start", width=6)
+
+# ------------------Fourth Row------------------
+fourth_row = Frame(window)
+start_button = Button(fourth_row, text="Start", width=6)
 
 start_button.pack(padx=5, pady=5)
-third_row.pack(side=BOTTOM)
+fourth_row.pack(side=BOTTOM)
 
 def run():
     folder_dir = path_entry.field.get()

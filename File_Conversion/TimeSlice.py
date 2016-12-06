@@ -4,7 +4,7 @@ BEGIN = 9
 END = 8
 
 
-class TimeSlice:
+class TimeSlice(object):
     def __init__(self, pitch, volume, message):
         self.pitch = pitch
         self.volume = volume

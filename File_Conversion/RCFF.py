@@ -3,7 +3,7 @@ import pickle
 from File_Conversion.TimeSlice import *
 
 
-class RCFF:
+class RCFF(object):
     def __init__(self, midi_file, tempo, instrument):
         self.midi_file = midi_file
         self.tempo = tempo
@@ -32,5 +32,7 @@ class RCFF:
 
     @staticmethod
     def unpickle(file_handler):
+
+        print "HI"
         rcff = pickle.load(file_handler)
         return rcff
