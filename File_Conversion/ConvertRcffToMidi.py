@@ -7,13 +7,14 @@ from RCFF import RCFF
 
 
 class ConvertRcffToMidi:
-    def __init__(self, rcff_file):
+    def __init__(self, rcff_file, instrument=0):
         self.__rcff_file = rcff_file
 
         self.__rcff = []
 
         if os.path.isfile(rcff_file):
             self.__rcff = RCFF.unpickle(open(self.__rcff_file))
+            self.__rcff.instrument = instrument
         else:
             raise Exception("The file passed doesn't exist")
 
@@ -22,8 +23,6 @@ class ConvertRcffToMidi:
 
         # Instantiate a MIDI Pattern (contains a list of tracks)
         pattern = midi.Pattern(format=1, resolution=480)
-        # TODO: We need to know resolution to get it to play at the right pace
-        # TODO: Resolution defaults to 220
         # Instantiate a MIDI Track (contains a list of MIDI events)
         track = midi.Track()
         # Append the track to the pattern
@@ -38,10 +37,7 @@ class ConvertRcffToMidi:
         slice_count = 0
         pitch = 60  # Concert C
         volume = 0
-        # see ticks/slice explanation in Converter.__create_time_slices_from_note__
-        ticks_per_time_slice = 110     # set default to 136 bpm because all the midis feel slow at 120 bpm
-        if r.tempo > 0:
-            ticks_per_time_slice = int(15000 / r.tempo)
+        ticks_per_time_slice = pattern.resolution / 4
 
         # Iterate over timeslices in RCFF, creating midi note events as appropriate
         # print "volume\tpitch\tmessage"
