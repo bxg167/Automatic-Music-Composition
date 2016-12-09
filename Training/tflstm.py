@@ -6,7 +6,7 @@ import pickle
 import sys
 
 vector_size = 139
-num_hidden = 64
+num_hidden = 1024
 
 series = tf.placeholder(tf.float32, [None, None, vector_size])
 
@@ -88,10 +88,11 @@ if __name__ == '__main__':
                 rcff = pickle.load(rcff_file)
                 print('unpickled')
                 sys.stdout.flush()
-                train(rcff, 1)
+                train(rcff, 10)
                 print('trained')
                 sys.stdout.flush()
                 samp = sample('destfile.rcff', 1000)
                 print('sampled')
+                print(rcff)
                 print(samp)
                 sys.stdout.flush()
