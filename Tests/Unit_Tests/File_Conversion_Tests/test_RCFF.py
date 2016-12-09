@@ -20,16 +20,26 @@ class TestRCFF(TestCase):
     def test_check_for_excessive_rest(self):
         rcff = RCFF("C:\\Users\\Bryce", 10, "Sax")
 
-        timeslice = TimeSlice("pitch", 100, 10)
+        # 0/1 is note
+        timeslice = TimeSlice("pitch", 100, 0)
         rcff.add_time_slice_to_body(timeslice)
         self.assertFalse(rcff.check_for_excessive_rest())
 
-        timeslice = TimeSlice("pitch", 100, 8)
-        rcff.add_time_slice_to_body(timeslice)
-        self.assertFalse(rcff.check_for_excessive_rest())
-
-        timeslice = TimeSlice("pitch", 100, 8)
+        # 1/2 is note
+        timeslice = TimeSlice("pitch", 100, 1)
         rcff.add_time_slice_to_body(timeslice)
         self.assertTrue(rcff.check_for_excessive_rest())
+
+        # 1/4 is note
+        timeslice = TimeSlice("pitch", 100, 0)
+        rcff.add_time_slice_to_body(timeslice)
+        timeslice = TimeSlice("pitch", 100, 0)
+        rcff.add_time_slice_to_body(timeslice)
+        self.assertTrue(rcff.check_for_excessive_rest())
+
+        # 1/5 is note
+        timeslice = TimeSlice("pitch", 100, 0)
+        rcff.add_time_slice_to_body(timeslice)
+        self.assertFalse(rcff.check_for_excessive_rest())
 
 
