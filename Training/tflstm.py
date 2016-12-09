@@ -5,7 +5,7 @@ from File_Conversion import TimeSlice
 import pickle
 import sys
 
-vector_size = 128
+vector_size = 139
 num_hidden = 64
 
 series = tf.placeholder(tf.float32, [None, None, vector_size])
@@ -40,7 +40,12 @@ def train(rcff, num_iters):
                 pitch = int(timeslice.pitch)
                 vec = [0] * 128
                 vec[pitch] = 1
+                vec += [timeslice.volume]
+                message_vec= [0]*10
+                message_vec[timeslice.message] = 1
+                vec += message_vec
                 train_series.append(vec)
+                
         train_series = [train_series]
         snapshot_num = 0
         for i in range(num_iters):
@@ -63,25 +68,27 @@ def load(load_path):
 
 def sample(rcff_dest_path, num_iters, seed=None):
         if not seed:
-                seed = [[1]*128]
+                seed = [[0]*vector_size]
+                seed[0][74] = 1
         for i in range(num_iters):
-                result = predict_round.eval(session=sess, feed_dict={series: [seed + [[0]*74+[1]+[0]*53]]})
+                result = predict.eval(session=sess, feed_dict={series: [seed + [[0]*vector_size]]})
                 result_last = result[-1,:]
                 seed.append(list(result_last))
         retval = RCFF.RCFF('generated', 120, 0)
         for notes in seed:
-                ts = TimeSlice.TimeSlice(notes.index(max(notes)), 1, 1)
+                message_vec = notes[129:139]
+                ts = TimeSlice.TimeSlice(notes.index(max(notes[0:128])), notes[128], message_vec.index(max(message_vec)))
                 retval.body.append(ts)
         with open(rcff_dest_path, 'wb') as rcff_dest_file:
                 retval.pickle(rcff_dest_file)
         return retval
-        
+
 if __name__ == '__main__':
         with open('2 Funky 2 - Brothers & Sisters_0.rcff', 'rb') as rcff_file:
                 rcff = pickle.load(rcff_file)
                 print('unpickled')
                 sys.stdout.flush()
-                train(rcff, 50)
+                train(rcff, 1)
                 print('trained')
                 sys.stdout.flush()
                 samp = sample('destfile.rcff', 1000)
