@@ -18,13 +18,10 @@ class FileConversionFunctionalTests(TestCase):
         # 1 for BEGIN, 1 for BEAT (Each beat is a 16th note) and 1 for END
         expected_num_timeslices_per_note = 3
 
-        # TODO: BUG 1.1
         self.assertEquals(1, len(rcff_files))
         self.assertEquals(SAX_INSTRUMENT_ID, rcff_files[0].instrument)
         self.assertEquals(num_notes * expected_num_timeslices_per_note, len(rcff_files[0].body))
 
-        # TODO: BUG 1.3
-        # TODO: BUG 1.1
         self.assertEquals(150, rcff_files[0].tempo)
 
     # Case 2.1.2
