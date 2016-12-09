@@ -23,9 +23,8 @@ class ConvertRcffToMidi:
     def __set_rcff__(self,rcff):
         self.__rcff = rcff
 
-    def create_midi(self, instrument=0):
+    def create_midi(self):
         r = self.__rcff
-        self.__rcff.instrument = instrument
 
         pattern = midi.Pattern(format=1, resolution=480)
 

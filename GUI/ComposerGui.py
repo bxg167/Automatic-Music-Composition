@@ -48,10 +48,11 @@ def start_process(midi_file_location):
     file_dir = path_entry.field.get()
     file_dir.replace('\"', '')
 
-    c = ConvertRcffToMidi(file_dir)
-
     instrument_string = spinbox.get()
-    midi_object = c.create_midi(midi_instrument_dictionary.get(instrument_string))
+
+    c = ConvertRcffToMidi(file_dir, midi_instrument_dictionary.get(instrument_string))
+
+    midi_object = c.create_midi()
 
     # The midi file should be written from the GUI, just as rcff files are. For now, we'll leave it here
     if not os.path.exists(midi_file_location):
