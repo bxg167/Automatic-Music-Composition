@@ -27,8 +27,7 @@ class TestConverter(TestCase):
         pattern = midi.read_midifile(os.path.abspath(os.path.join(file_path, "bsax2.mid")))
         self.assertEquals(15, len(pattern))
 
-        instrument, tempo, notes = Converter.__extract_data__(pattern[10]) #First 9 patterns threw errors due to multiple voices.
+        instrument, notes = Converter.__extract_data__(pattern[10]) #First 9 patterns threw errors due to multiple voices.
 
         self.assertEquals(65, instrument)
-        self.assertEquals(0, tempo)
         self.assertEquals(296, len(notes))
