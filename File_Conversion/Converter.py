@@ -1,3 +1,4 @@
+from __future__ import print_function
 import os
 
 import midi
@@ -17,7 +18,6 @@ class Converter:
         self.__pattern = []
         if os.path.isfile(midi_file):
             self.__pattern = midi.read_midifile(self.__midi_file)
-            # print(self.__pattern)
             fr = midi.FileReader()
             self.resolution = self.__pattern.resolution
         else:
@@ -37,12 +37,11 @@ class Converter:
 
             new_rcff = self.__create_rcff_file__(track, tempo)
 
-            # TODO: BUG 1.2
             if new_rcff.check_for_excessive_rest():
                 rcff_files.append(new_rcff)
-                print "RCFF successfully created"
+                print("RCFF successfully created")
             else:
-                print "FAILED: RCFF not generated"
+                print("FAILED: RCFF not generated")
 
         return rcff_files
 
@@ -52,20 +51,16 @@ class Converter:
         try:
             instrument, notes = self.__extract_data__(track)
 
-            # TODO: BUG 1.2
-            # print tempo
         except RuntimeError as e:
             print(e.message)
             pass
-        # Do we want to give the RCFF a unique name here? Like RCFF(self.__midi_file + ID, tempo, instrument)?
-        # This will allow us to test for 2.1.8 automatically, if not, then we can just run this test case manually
+        
         new_rcff = RCFF(self.__midi_file, tempo, instrument)
 
         self.__add_rest_before_first_note__(new_rcff, notes)
 
         for note_pos in range(0, len(notes)):
             note = notes[note_pos]
-            # print "note", note
             if note_pos > 0:
                 last_note = notes[note_pos - 1]
                 self.__create_rest_time_slices__(new_rcff, last_note, note)
@@ -83,7 +78,6 @@ class Converter:
     def __extract_data__(track):
         notes = []  # [(time, length, pitch, velocity)]
         time = 0
-        # tempo = 0
         pitch_started = {}
         volume = -1
         instrument = -1
@@ -93,24 +87,15 @@ class Converter:
             time += event.tick
             if not found_instrument and (type(event) is midi.ProgramChangeEvent):
                 found_instrument = True
-                # TODO: BUG 1.4
                 if event.data[0] < MIN_SINGLE_VOICE_RANGE or event.data[0] > MAX_SINGLE_VOICE_RANGE:
                     raise RuntimeError('not a single voice instrument')
                 instrument = event.data[0]
 
-            # This never activates because type(xxx) is yyy doesn't work with inheritance, which is what I think this method was going for.
-            # Along with that, the volume is specified in the NoteOnEvent, NoteOffEvent does have a volume, but it is always 0
-            # if type(event) is midi.NoteEvent:
-            #     # print("b")
-            #     volume = event.get_velocity
-
             if type(event) is midi.NoteOnEvent:
                 pitch_started[event.pitch] = time
                 volume = event.get_velocity.im_self.velocity
-                # TODO: Some MIDIs only used OnEvents.
 
             if type(event) is midi.NoteOffEvent:
-                # print("c")
                 if event.pitch in pitch_started:
                     start_time = pitch_started[event.pitch]
                     length = time - start_time
@@ -134,18 +119,12 @@ class Converter:
         tick_increment = self.__get_tick_increment__(rcff)
         num_slices = int(math.ceil(length / tick_increment))
 
-        # Notes with 0 volume are secretly rests. Does that actually matter?
         note_type = BEAT
         if volume == 0:
             note_type = REST
 
         rcff = self.__create_time_slice__(rcff, num_slices, pitch, volume, note_type)
 
-        # TODO: BUG 1.7
-        # if i == 0:
-        # rcff.add_time_slice_to_body(TimeSlice(pitch, volume, 9))
-        # else:
-        # rcff.add_time_slice_to_body(TimeSlice(pitch, volume, 0))
 
         return rcff
 
@@ -178,12 +157,6 @@ class Converter:
 
         return rcff
 
-    def __get_tick_increment__(self, rcff):
-        # note length is in ticks (milliseconds),but we want a TimeSlice for each quarter of a beat (a 16th note, generally)
-        # (.25 beats/TimeSlice * 60000 ticks/minute) / (tempo bpm) ==> 15000 ticks per TimeSlice
-        #Bug 
+    def __get_tick_increment__(self, rcff): 
         return self.resolution /4
-        #tick_increment = 125  # default to 120 bpm
-        #if rcff.tempo != 0:
-            #tick_increment = 15000 / rcff.tempo
-        #return tick_increment
+

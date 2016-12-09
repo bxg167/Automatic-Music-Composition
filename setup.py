@@ -17,7 +17,10 @@ if sys.version_info[:2][0] == 2:
             )
 elif sys.version_info[:2][0] == 3:
       print('3')
-      packages_to_install = []
+      packages_to_install = ["pyinstaller",
+                             "coverage",
+			     "numpy",
+			     "tensorflow"]
       for package in packages_to_install:
             pip.main(["install", package])
       setup(name='AMC',

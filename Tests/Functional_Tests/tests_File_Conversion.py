@@ -28,13 +28,21 @@ class FileConversionFunctionalTests(TestCase):
         self.assertEquals(150, rcff_files[0].tempo)
 
     # Case 2.1.2
-    # TODO: BUG 1.7
-    # def test_timeslices(self):
-    #     rcff_files = self.create_rcff_files("SaxOneNote.mid")
-    #
-    #     self.assertEquals(1, len(rcff_files))
-    #     self.assertEquals()
-
+    def test_create_rcff_file_from_midi_with_single_note(self):
+        c = Converter(os.path.abspath(os.path.join(file_path, "SaxOneNote.mid")))
+        rcff = c.create_rcff_files()
+        note = 35
+        vol = 127
+        count = 0
+        length = 120
+        res = 480
+        print "length ", len(rcff)
+        for ts in rcff[0].body:
+            self.assertEquals(ts.pitch, note)
+            self.assertEquals(ts.volume,vol)
+            count = count +1
+        self.assertTrue(len(rcff[0].body),int(math.ceil(length/(res/4))))
+        
     # Case 2.1.3
     def test_voice_discard_no_pitches(self):
         rcff_files = self.create_rcff_files("Drums.mid")
