@@ -51,21 +51,23 @@ class NeuralNetwork():
 
         train_series = [train_series]
         snapshot_num = 0
-        for i in range(num_iters):
-            try:
-                for j in range(len(train_series)):
-                    this_train_series = train_series[j]
-                    self.sess.run(self.minimize,{self.series: [this_train_series]})
-                if i % 10 == 0:
-                    #TODO: delete last temp snapshot
-                    #saver.save(sess, "C:\\temp_snapshot_" + str(snapshot_num))
-                    #snapshot_num += 1
-                    pass
-                print('done iter' + str(i))
-                sys.stdout.flush()
-            except RuntimeException:
-                with open('error.log', 'w') as logfile:
+        with open('error.log', 'w') as logfile:
+            logfile.write('starting!\n')
+            for i in range(num_iters):
+                try:
+                    for j in range(len(train_series)):
+                        this_train_series = train_series[j]
+                        self.sess.run(self.minimize,{self.series: [this_train_series]})
+                    if i % 10 == 0:
+                        #TODO: delete last temp snapshot
+                        #saver.save(sess, "C:\\temp_snapshot_" + str(snapshot_num))
+                        #snapshot_num += 1
+                        pass
+                    print('done iter' + str(i))
+                    sys.stdout.flush()
+                except RuntimeException:
                     logfile.write(traceback.format_exc())
+            logfile.write('finished!\n')
 
     def save(self, save_path):
         self.saver.save(self.sess, save_path)
@@ -73,10 +75,11 @@ class NeuralNetwork():
     def load(self, load_path):
         self.saver.restore(self.sess, load_path)
 
-    def sample(self, rcff_dest_path, num_iters, seed=None):
+    def sample(self, rcff_dest_path, num_iters=300, seed=None):
         if not seed:
             seed = [[0]*self.vector_size]
             seed[0][74] = 1
+        num_iters -= len(seed)
         for i in range(num_iters):
             result = self.predict.eval(session=self.sess, feed_dict={self.series: [seed + [[0]*self.vector_size]]})
             result_last = result[-1,:]
