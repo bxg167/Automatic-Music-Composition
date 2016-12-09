@@ -8,15 +8,15 @@ import sys
 class NeuralNetwork():
         def __init__(self):
                 vector_size = 139
-                num_hidden = 64
+                num_hidden = 1024
 
-                series = tf.placeholder(tf.float32, [None, None, vector_size])
+                self.series = tf.placeholder(tf.float32, [None, None, vector_size])
 
                 cell = tf.nn.rnn_cell.LSTMCell(num_hidden, state_is_tuple=True)
 
-                val, state = tf.nn.dynamic_rnn(cell, series, dtype=tf.float32) # val is num_sequences x series_length * num_hidden
+                val, state = tf.nn.dynamic_rnn(cell, self.series, dtype=tf.float32) # val is num_sequences x series_length * num_hidden
                 predict_hidden = val[:,:-1,:]
-                target = series[0,1:,:] #only use first series
+                target = self.series[0,1:,:] #only use first series
                 weight = tf.Variable(tf.truncated_normal([num_hidden, vector_size]))
                 bias = tf.Variable(tf.constant(0.1, shape=[vector_size]))
                 predict = tf.matmul(predict_hidden[0,:,:], weight) + bias #only use first series
@@ -30,8 +30,8 @@ class NeuralNetwork():
 
                 self.saver = tf.train.Saver()
 
-                sess = tf.Session()
-                sess.run(init_op)
+                self.sess = tf.Session()
+                self.sess.run(init_op)
 
                 print('finished init')
 
