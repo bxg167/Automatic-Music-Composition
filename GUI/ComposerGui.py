@@ -32,9 +32,6 @@ label.pack(side=LEFT)
 
 path_entry.pack(fill=X, expand=YES, padx=10, pady=10)
 
-created_text = Label(first_row)
-created_text.pack(fill=X)
-
 first_row.pack(fill=X, expand=YES)
 
 
@@ -46,48 +43,58 @@ label.pack(side=LEFT)
 spinbox.pack(side=LEFT)
 second_row.pack(fill=X, expand=YES)
 
+
 #Place holder for actual method
 def start_process(midi_file_location):
-    print "Composing: " + midi_file_location
+    status_label.config(text="Composing: " + midi_file_location)
+
+    print path_entry.field.get()
     c = ConvertRcffToMidi(path_entry.field.get())
 
-    #TODO: Send Instrument value.
+    # TODO: Send Instrument value.
     midi_object = c.create_midi()
 
     # The midi file should be written from the GUI, just as rcff files are. For now, we'll leave it here
     if not os.path.exists(midi_file_location):
         midi.write_midifile(midi_file_location, midi_object)
-        created_text.configure(text=os.path.basename(midi_file_location) + " Successfully Completed.")
+        status_label.configure(text=os.path.basename(midi_file_location) + " Successfully Completed.")
     else:
-        created_text.configure(text="Error: File already exists")
+        status_label.configure(text="Error: File already exists")
 
 
-def open_save_as():
-    browser = SaveAs()
+def open_save_as(starting_folder_dir):
+    browser = SaveAs(starting_folder_dir)
     browser.grab_set()
     browser.wait_window()
 
     if browser.selection != "":
         start_process(browser.selection)
     else:
-        created_text.configure(text="Not Completed.")
-
+        status_label.configure(text="Not Completed.")
 
 # ------------------Third Row------------------
 third_row = Frame(window)
-start_button = Button(third_row, text="Start", width=6)
+status_label = Label(window)
+status_label.pack()
+third_row.pack()
+
+# ------------------Fourth Row------------------
+fourth_row = Frame(window)
+start_button = Button(fourth_row, text="Start", width=6)
 
 start_button.pack(padx=5, pady=5)
-third_row.pack(side=BOTTOM)
+fourth_row.pack()
 
 def run():
-    folder_dir = path_entry.field.get()
+    file_dir = path_entry.field.get()
 
-    if not os.path.isfile(folder_dir):
+    if not os.path.isfile(file_dir):
         PopUp("Not a valid file")
         return
 
-    open_save_as()
+    folder_dir = os.path.dirname(file_dir)
+    print folder_dir
+    open_save_as(folder_dir)
 
 start_button.configure(command=run)
 

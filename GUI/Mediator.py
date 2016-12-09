@@ -15,13 +15,17 @@ class Mediator:
         try:
             c = Converter(os.path.join(folder_dir, file_name))
             rcff_files = c.create_rcff_files()
-        except TypeError:
+        except TypeError as e:
+            print(str(e))
             return Exception
-        except KeyError:
+        except KeyError as e:
+            print(str(e))
             return Exception
-        except Warning:
+        except Warning as e:
+            print(str(e))
             return Exception
-        except Exception:
+        except Exception as e:
+            print(str(e))
             return Exception
 
         i = 0

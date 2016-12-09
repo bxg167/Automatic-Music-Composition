@@ -3,8 +3,8 @@ import os
 import midi
 import math
 
-#from RCFF import RCFF
-#from TimeSlice import *
+from RCFF import RCFF
+from TimeSlice import *
 
 MIN_SINGLE_VOICE_RANGE = 57
 MAX_SINGLE_VOICE_RANGE = 80
@@ -19,7 +19,7 @@ class Converter:
             self.__pattern = midi.read_midifile(self.__midi_file)
             # print(self.__pattern)
             fr = midi.FileReader()
-            tracks,self.resolution, format= fr.parse_file_header(midi_file) #(tracks=tracks, resolution=resolution, format=format)
+            self.resolution = self.__pattern.resolution
         else:
             raise Exception("The file passed doesn't exist")
 
@@ -61,7 +61,7 @@ class Converter:
         # This will allow us to test for 2.1.8 automatically, if not, then we can just run this test case manually
         new_rcff = RCFF(self.__midi_file, tempo, instrument)
 
-        Converter.__add_rest_before_first_note__(new_rcff, notes)
+        self.__add_rest_before_first_note__(new_rcff, notes)
 
         for note_pos in range(0, len(notes)):
             note = notes[note_pos]
@@ -119,8 +119,7 @@ class Converter:
 
         return instrument, notes
 
-    @staticmethod
-    def __create_time_slice__(rcff, num_timeslices, pitch, volume, timeslice_type):
+    def __create_time_slice__(self, rcff, num_timeslices, pitch, volume, timeslice_type):
         rcff.add_time_slice_to_body(TimeSlice(pitch, volume, BEGIN))
         for i in range(0, num_timeslices):
             rcff.add_time_slice_to_body(TimeSlice(pitch, volume, timeslice_type))
@@ -129,11 +128,10 @@ class Converter:
 
         return rcff
 
-    @staticmethod
-    def __create_time_slices_from_note__(rcff, note):
+    def __create_time_slices_from_note__(self, rcff, note):
         time, length, pitch, volume = note
 
-        tick_increment = Converter.__get_tick_increment__(rcff)
+        tick_increment = self.__get_tick_increment__(rcff)
         num_slices = int(math.ceil(length / tick_increment))
 
         # Notes with 0 volume are secretly rests. Does that actually matter?
@@ -141,7 +139,7 @@ class Converter:
         if volume == 0:
             note_type = REST
 
-        rcff = Converter.__create_time_slice__(rcff, num_slices, pitch, volume, note_type)
+        rcff = self.__create_time_slice__(rcff, num_slices, pitch, volume, note_type)
 
         # TODO: BUG 1.7
         # if i == 0:
@@ -151,8 +149,7 @@ class Converter:
 
         return rcff
 
-    @staticmethod
-    def __create_rest_time_slices__(rcff, previous_note, next_note):
+    def __create_rest_time_slices__(self, rcff, previous_note, next_note):
         prev_time, prev_length, prev_pitch, prev_volume = previous_note
         next_time, next_length, next_pitch, next_volume = next_note
 
@@ -161,14 +158,13 @@ class Converter:
 
         length = rest_end_time - rest_start_time
         if length > 0:
-            tick_increment = Converter.__get_tick_increment__(rcff)
+            tick_increment = self.__get_tick_increment__(rcff)
             num_slices = int(math.ceil(length / tick_increment))
-            rcff = Converter.__create_time_slice__(rcff, num_slices, 0, 0, REST)
+            rcff = self.__create_time_slice__(rcff, num_slices, 0, 0, REST)
 
         return rcff
 
-    @staticmethod
-    def __add_rest_before_first_note__(rcff, notes):
+    def __add_rest_before_first_note__(self, rcff, notes):
         if len(notes) == 0:
             return
 
@@ -176,13 +172,13 @@ class Converter:
 
         # The time variable indicates the time the song is at after the note has been played (length of note).
         if time != length:
-            tick_increment = Converter.__get_tick_increment__(rcff)
+            tick_increment = self.__get_tick_increment__(rcff)
             num_slices = int(math.ceil(length / tick_increment))
-            rcff = Converter.__create_time_slice__(rcff, num_slices, 0, 0, REST)
+            rcff = self.__create_time_slice__(rcff, num_slices, 0, 0, REST)
 
         return rcff
 
-    def __get_tick_increment__(self,rcff):
+    def __get_tick_increment__(self, rcff):
         # note length is in ticks (milliseconds),but we want a TimeSlice for each quarter of a beat (a 16th note, generally)
         # (.25 beats/TimeSlice * 60000 ticks/minute) / (tempo bpm) ==> 15000 ticks per TimeSlice
         #Bug 
