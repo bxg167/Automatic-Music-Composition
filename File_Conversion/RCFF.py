@@ -32,7 +32,5 @@ class RCFF(object):
 
     @staticmethod
     def unpickle(file_handler):
-
-        print "HI"
         rcff = pickle.load(file_handler)
         return rcff
