@@ -1,13 +1,13 @@
 from unittest import TestCase
 import os
-
+import math
 from File_Conversion.Converter import Converter
 
 CURRENT_DIRECTORY = os.path.dirname(__file__)
 SAX_INSTRUMENT_ID = 65
 OBOE_INSTRUMENT_ID = 68
 
-
+file_path = os.path.dirname(__file__)
 class FileConversionFunctionalTests(TestCase):
 
     # Case 2.1.1
