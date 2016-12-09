@@ -1,13 +1,13 @@
 from unittest import TestCase
 import os
-
+import math
 from File_Conversion.Converter import Converter
 
 CURRENT_DIRECTORY = os.path.dirname(__file__)
 SAX_INSTRUMENT_ID = 65
 OBOE_INSTRUMENT_ID = 68
 
-
+file_path = os.path.dirname(__file__)
 class FileConversionFunctionalTests(TestCase):
 
     # Case 2.1.1
@@ -18,13 +18,10 @@ class FileConversionFunctionalTests(TestCase):
         # 1 for BEGIN, 1 for BEAT (Each beat is a 16th note) and 1 for END
         expected_num_timeslices_per_note = 3
 
-        # TODO: BUG 1.1
         self.assertEquals(1, len(rcff_files))
         self.assertEquals(SAX_INSTRUMENT_ID, rcff_files[0].instrument)
         self.assertEquals(num_notes * expected_num_timeslices_per_note, len(rcff_files[0].body))
 
-        # TODO: BUG 1.3
-        # TODO: BUG 1.1
         self.assertEquals(150, rcff_files[0].tempo)
 
     # Case 2.1.2
@@ -36,7 +33,6 @@ class FileConversionFunctionalTests(TestCase):
         count = 0
         length = 120
         res = 480
-        print "length ", len(rcff)
         for ts in rcff[0].body:
             self.assertEquals(ts.pitch, note)
             self.assertEquals(ts.volume,vol)
@@ -124,7 +120,7 @@ class FileConversionFunctionalTests(TestCase):
 
     # Case 2.1.10
     def test_exception_with_bad_file(self):
-        self.assertRaises(TypeError, self.create_rcff_files, "TextDocument.mid")
+        self.assertRaises(Exception, self.create_rcff_files, "TextDocument.mid")
 
     # No test case id.
     # This test was added to test what happens when a bad path is given to Converter's constructor.

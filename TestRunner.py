@@ -9,9 +9,8 @@ main_suite = unittest.TestSuite()
 unit_test_suite = unittest.TestLoader().discover(os.path.join(file_path, "Unit_Tests"))
 main_suite.addTest(unit_test_suite)
 
-# TODO: UNCOMMENT THIS TO RUN ALL THE TESTS
-# functional_test_suite = unittest.TestLoader().discover(os.path.join(file_path, "Functional_Tests"))
-# main_suite.addTest(functional_test_suite)
+functional_test_suite = unittest.TestLoader().discover(os.path.join(file_path, "Functional_Tests"))
+main_suite.addTest(functional_test_suite)
 
 results = unittest.TestResult()
 main_suite.run(results)
