@@ -34,12 +34,8 @@ parser.add_argument("-U", "--use", help="The location of an already existing RNN
 parser.add_argument("-S", "--save", help="The desired location and name given to the new RNN snapshot", metavar="SAVE_PATH", default=DEFAULT_RNN_SNAPSHOT_NAME)
 parser.add_argument("-C", "--create", help="The Number of RCFF files that should be made\nCannot be used with the --teach command", metavar="NUMBER_OF_RCFF_TO_MAKE", type=int, default=-1)
 
-# MAY NOT NEED
-# parser.add_argument("-N", "--name", help="The location of the RNN snapshot", metavar="RNN_NAME")
-
 args = parser.parse_args()
 
-# name = args.name
 create = args.create
 save = args.save
 use = args.use
@@ -51,6 +47,7 @@ if create == -1 and teach is None:
 elif create != -1 and teach is not None:
     print_error_and_terminate("Two action command were given. To use this program, only use --teach or only use --create, not both")
 
+
 def teach_rnn(save_name):
     file_check(use, "use")
 
@@ -61,7 +58,7 @@ def teach_rnn(save_name):
     if len(rcff_files) == 0:
         print_error_and_terminate("The passed directory containing RCFF has no rcff files in it.")
 
-    # The RNN should be saved with the rcff files, if it isn't otherwised specified.
+    # The RNN should be saved with the rcff files, if it isn't otherwise specified.
     if save_name == DEFAULT_RNN_SNAPSHOT_NAME:
         save_name = os.path.join(teach, save_name)
 
@@ -114,5 +111,3 @@ if create == -1:
     teach_rnn(save)
 else:
     create_rcffs()
-
-print("\nSuccessful input.")
