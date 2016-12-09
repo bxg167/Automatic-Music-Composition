@@ -29,4 +29,4 @@ class TestConverter(TestCase):
         instrument, notes = Converter.__extract_data__(pattern[10]) #First 9 patterns threw errors due to multiple voices.
 
         self.assertEquals(65, instrument)
-        self.assertEquals(296, len(notes))
+        self.assertEquals(294, len(notes))
