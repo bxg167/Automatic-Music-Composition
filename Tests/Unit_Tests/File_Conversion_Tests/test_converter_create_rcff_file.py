@@ -53,20 +53,7 @@ class TestConverter(TestCase):
         self.assertEquals(0, rcff.tempo)
         self.assertEquals(os.path.abspath(os.path.join(file_path, "mary.mid")), rcff.midi_file)
 
-    def test_create_rcff_file_from_midi_with_single_note(self):
-        c = Converter(os.path.abspath(os.path.join(file_path, "SaxOneNote.mid")))
-        rcff = c.create_rcff_files()
-        note = 35
-        vol = 127
-        count = 0
-        length = 120
-        res = 480
-        print "length ", len(rcff)
-        for ts in rcff[0].body:
-            self.assertEquals(ts.pitch, note)
-            self.assertEquals(ts.volume,vol)
-            count = count +1
-        self.assertTrue(len(rcff[0].body),int(math.ceil(length/(res/4))))
+    
 
     
             
