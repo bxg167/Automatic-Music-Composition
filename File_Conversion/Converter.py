@@ -18,8 +18,9 @@ class Converter:
         self.__pattern = []
         if os.path.isfile(midi_file):
             self.__pattern = midi.read_midifile(self.__midi_file)
-            fr = midi.FileReader()
+
             self.resolution = self.__pattern.resolution
+            self.tickrate = self.resolution / 4
         else:
             raise Exception("The file passed doesn't exist")
 
@@ -29,19 +30,14 @@ class Converter:
         num_tracks = 0
 
         tempo = self.__extract_tempo__(self.__pattern[0])
-        print("tempo: " + str(tempo))
 
         for track in self.__pattern:
-            print("\nNEXT TRACK")
             num_tracks += 1
 
             new_rcff = self.__create_rcff_file__(track, tempo)
 
             if new_rcff.check_for_excessive_rest():
                 rcff_files.append(new_rcff)
-                print("RCFF successfully created")
-            else:
-                print("FAILED: RCFF not generated")
 
         return rcff_files
 
@@ -116,15 +112,13 @@ class Converter:
     def __create_time_slices_from_note__(self, rcff, note):
         time, length, pitch, volume = note
 
-        tick_increment = self.__get_tick_increment__(rcff)
-        num_slices = int(math.ceil(length / tick_increment))
+        num_slices = int(math.ceil(length / self.tickrate))
 
         note_type = BEAT
         if volume == 0:
             note_type = REST
 
         rcff = self.__create_time_slice__(rcff, num_slices, pitch, volume, note_type)
-
 
         return rcff
 
@@ -137,8 +131,7 @@ class Converter:
 
         length = rest_end_time - rest_start_time
         if length > 0:
-            tick_increment = self.__get_tick_increment__(rcff)
-            num_slices = int(math.ceil(length / tick_increment))
+            num_slices = int(math.ceil(length / self.tickrate))
             rcff = self.__create_time_slice__(rcff, num_slices, 0, 0, REST)
 
         return rcff
@@ -151,12 +144,7 @@ class Converter:
 
         # The time variable indicates the time the song is at after the note has been played (length of note).
         if time != length:
-            tick_increment = self.__get_tick_increment__(rcff)
-            num_slices = int(math.ceil(time / tick_increment))
+            num_slices = int(math.ceil(time / self.tickrate))
             rcff = self.__create_time_slice__(rcff, num_slices, 0, 0, REST)
 
         return rcff
-
-    def __get_tick_increment__(self, rcff): 
-        return self.resolution /4
-
