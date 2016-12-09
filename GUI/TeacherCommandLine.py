@@ -92,7 +92,7 @@ def teach_rnn(save_name):
 
         file_handler = open(rcff_file, 'rb')
 
-        network.train(RCFF.RCFF.unpickle(file_handler))
+        network.train(RCFF.RCFF.unpickle(file_handler), 100)
 
         file_handler.close()
 
