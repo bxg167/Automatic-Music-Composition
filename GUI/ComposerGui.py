@@ -52,6 +52,7 @@ def start_process(midi_file_location):
     c = ConvertRcffToMidi(path_entry.field.get())
 
     # TODO: Send Instrument value.
+
     midi_object = c.create_midi()
 
     # The midi file should be written from the GUI, just as rcff files are. For now, we'll leave it here
@@ -93,7 +94,7 @@ def run():
         return
 
     folder_dir = os.path.dirname(file_dir)
-    print folder_dir
+
     open_save_as(folder_dir)
 
 start_button.configure(command=run)

@@ -1,3 +1,4 @@
+import copy_reg
 import os
 
 import midi
@@ -8,6 +9,10 @@ from RCFF import RCFF
 
 class ConvertRcffToMidi:
     def __init__(self, rcff_file_path, instrument=0):
+        a = copy_reg.__all__
+        if a is None:
+            print
+
         self.__rcff_file = rcff_file_path
 
         self.__rcff = []
@@ -23,9 +28,9 @@ class ConvertRcffToMidi:
     def __set_rcff__(self,rcff):
         self.__rcff = rcff
 
-    def create_midi(self):
+    def create_midi(self, instrument=0):
         r = self.__rcff
-
+        self.__rcff.instrument = instrument
         # Instantiate a MIDI Pattern (contains a list of tracks)
         pattern = midi.Pattern(format=1, resolution=480)
         # Instantiate a MIDI Track (contains a list of MIDI events)
@@ -63,7 +68,7 @@ class ConvertRcffToMidi:
             elif timeSlice.message == TimeSlice.BEAT:
                 slice_count += 1
                 pitch = timeSlice.pitch
-                volume = timeSlice.volume
+                volume = timeSlice.volume + 100
             else:   # timeSlice.message == TimeSlice.REST
                 slice_count += 1
                 volume = 0

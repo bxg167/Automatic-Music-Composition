@@ -1,3 +1,4 @@
+import copy_reg
 import pickle
 
 from File_Conversion.TimeSlice import *

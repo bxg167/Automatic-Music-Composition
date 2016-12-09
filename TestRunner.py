@@ -1,7 +1,7 @@
 import os
 import unittest
 
-file_path = os.path.dirname(__file__)
+file_path = os.path.join(os.path.dirname(__file__), "Tests")
 
 main_suite = unittest.TestSuite()
 
@@ -29,10 +29,14 @@ else:
     print "Failures: "
     for failure in results.failures:
         for info in failure:
+            print "------------------------Failure------------------------"
             print info
+            print
 
     print
     print "Errors: "
     for errors in results.errors:
         for info in errors:
+            print "------------------------Error------------------------"
             print info
+            print

@@ -1,6 +1,6 @@
 import os
 from unittest.case import TestCase
-
+import copy_reg
 import midi
 from File_Conversion.RCFF import RCFF
 from File_Conversion.TimeSlice import TimeSlice
@@ -13,6 +13,9 @@ class TestConvertRcffToMidi(TestCase):
  # pattern holds tracks hold events
 
     def test_create_midi_from_track_with_no_useful_info(self):
+        a = copy_reg.__all__
+        if a is None:
+            print
         # convert empty rcff
         convertR2M = ConvertRcffToMidi(os.path.abspath(os.path.join(file_path, "empty.rcff")))
         pattern = convertR2M.create_midi()
