@@ -70,7 +70,7 @@ class TestConvertRcffToMidi(TestCase):
         test_rcff.add_time_slice_to_body(TimeSlice(0, 0, 8))
         convertR2M.__set_rcff__(test_rcff)
         pattern = convertR2M.create_midi()
-        #pattern.
+        print "hello", pattern, pattern[0]
 
         self.assertEquals(1, len(pattern))
         self.assertEquals(10, len(pattern[0]))

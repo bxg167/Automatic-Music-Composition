@@ -13,6 +13,7 @@ class RCFF(object):
     def add_time_slice_to_body(self, time_slice):
         self.body.append(time_slice)
 
+    # Returns True if rests are NOT excessive (beat makes up at least 1/4 of time slices)
     def check_for_excessive_rest(self):
         beat_count = 0
         rest_count = 0
