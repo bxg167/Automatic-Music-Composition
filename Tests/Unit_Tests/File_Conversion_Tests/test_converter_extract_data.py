@@ -17,9 +17,8 @@ class TestConverter(TestCase):
 
         self.assertEquals(2, len(pattern))
 
-        instrument, tempo, notes = c.__extract_data__(pattern[0])
+        instrument, notes = c.__extract_data__(pattern[0])
         self.assertEquals(-1, instrument)
-        self.assertEquals(0, tempo)
         self.assertEquals(0, len(notes))
 
     def test_extract_data_from_track_with_exception_thrown(self):
@@ -36,4 +35,4 @@ class TestConverter(TestCase):
         instrument, notes = c.__extract_data__(pattern[10]) #First 9 patterns threw errors due to multiple voices.
 
         self.assertEquals(65, instrument)
-        self.assertEquals(296, len(notes))
+        self.assertEquals(294, len(notes))
