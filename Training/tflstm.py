@@ -7,22 +7,22 @@ import sys
 
 class NeuralNetwork():
     def __init__(self):
-        vector_size = 139
-        num_hidden = 8
+        self.vector_size = 139
+        self.num_hidden = 8
 
-        series = tf.placeholder(tf.float32, [None, None, vector_size])
+        self.series = tf.placeholder(tf.float32, [None, None, self.vector_size])
 
-        cell = tf.nn.rnn_cell.LSTMCell(num_hidden, state_is_tuple=True)
+        cell = tf.nn.rnn_cell.LSTMCell(self.num_hidden, state_is_tuple=True)
 
-        val, state = tf.nn.dynamic_rnn(cell, series, dtype=tf.float32) # val is num_sequences x series_length * num_hidden
+        val, state = tf.nn.dynamic_rnn(cell, self.series, dtype=tf.float32) # val is num_sequences x series_length * num_hidden
         predict_hidden = val[:,:-1,:]
-        target = series[0,1:,:] #only use first series
-        weight = tf.Variable(tf.truncated_normal([num_hidden, vector_size]))
-        bias = tf.Variable(tf.constant(0.1, shape=[vector_size]))
-        predict = tf.matmul(predict_hidden[0,:,:], weight) + bias #only use first series
-        self.predict_round = tf.where(tf.greater(predict, tf.ones_like(predict)*0.5), tf.ones_like(predict, dtype=tf.int32), tf.zeros_like(predict, dtype=tf.int32))
+        target = self.series[0,1:,:] #only use first series
+        weight = tf.Variable(tf.truncated_normal([self.num_hidden, self.vector_size]))
+        bias = tf.Variable(tf.constant(0.1, shape=[self.vector_size]))
+        self.predict = tf.matmul(predict_hidden[0,:,:], weight) + bias #only use first series
+        self.predict_round = tf.where(tf.greater(self.predict, tf.ones_like(self.predict)*0.5), tf.ones_like(self.predict, dtype=tf.int32), tf.zeros_like(self.predict, dtype=tf.int32))
 
-        loss = tf.reduce_mean(tf.square(target - predict))
+        loss = tf.reduce_mean(tf.square(target - self.predict))
         optimizer = tf.train.AdamOptimizer()
         self.minimize = optimizer.minimize(loss)
 
@@ -30,8 +30,8 @@ class NeuralNetwork():
 
         self.saver = tf.train.Saver()
 
-        sess = tf.Session()
-        sess.run(init_op)
+        self.sess = tf.Session()
+        self.sess.run(init_op)
 
         print('finished init')
 
@@ -143,3 +143,7 @@ def validate_rcff(rcff):
                 mode = 'ready'
         with open('destfile.rcff', 'wb') as rcff_dest_file:
             rcff_new.pickle(rcff_dest_file)
+
+if __name__ == '__main__':
+	nn = NeuralNetwork()
+	nn.save('abcd')
