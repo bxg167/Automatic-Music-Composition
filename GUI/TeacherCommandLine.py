@@ -1,7 +1,8 @@
 import argparse
 import os
+import uuid
 
-import sys
+from Training.tflstm import *
 
 DEFAULT_RNN_SNAPSHOT_NAME = "default.snapshot"
 
@@ -20,65 +21,98 @@ def file_check(file_path, var_name):
 def get_rcff_files():
     temp_files = []
 
-    for file_name in os.listdir(rcff):
+    for file_name in os.listdir(teach):
         if file_name.endswith(".rcff"):
-            temp_files.append(os.path.join(rcff, file_name))
+            temp_files.append(os.path.join(teach, file_name))
     return temp_files
 
 parser = argparse.ArgumentParser(prog="Teacher")
 
 # Optional Parameters
-parser.add_argument("-R", "--rcff", help="RCFF Folder", metavar="RCFF_FOLDER_PATH", required=True)
-
-# Required Parameters
-parser.add_argument("-U", "--update", help="The location of an already existing RNN", metavar="RNN_NAME")
+parser.add_argument("-T", "--teach", help="RCFF Folder that will be taught to the RNN.\nCannot be used with the --create command", metavar="RCFF_FOLDER_PATH")
+parser.add_argument("-U", "--use", help="The location of an already existing RNN", metavar="RNN_NAME")
 parser.add_argument("-S", "--save", help="The desired location and name given to the new RNN snapshot", metavar="SAVE_PATH", default=DEFAULT_RNN_SNAPSHOT_NAME)
+parser.add_argument("-C", "--create", help="The Number of RCFF files that should be made\nCannot be used with the --teach command", metavar="NUMBER_OF_RCFF_TO_MAKE", type=int, default=-1)
 
 # MAY NOT NEED
-parser.add_argument("-N", "--name", help="The location of the RNN snapshot", metavar="RNN_NAME")
+# parser.add_argument("-N", "--name", help="The location of the RNN snapshot", metavar="RNN_NAME")
 
 args = parser.parse_args()
-name = args.name
-rcff = args.rcff
+
+# name = args.name
+create = args.create
 save = args.save
-update = args.update
+use = args.use
+teach = args.teach
 
-file_check(name, "name")
-file_check(update, "update")
+if create == -1 and teach is None:
+    print_error_and_terminate("No action commands were given. To use this program, use the either the --teach or the --create arguments, but not both")
+elif create != -1 and teach is not None:
+    print_error_and_terminate("Two action command were given. To use this program, only use --teach or only use --create, not both")
 
-if not os.path.isdir(rcff):
-    print_error_and_terminate("The passed directory containing RCFF files does not exist.")
+if create <= 0 and create != -1:
+    print_error_and_terminate("The requested number of rcff files to make is less than 1.")
 
-rcff_files = get_rcff_files()
+if use is not None:
+    if os.path.isdir(use):
+        print_error_and_terminate("The path given for use is invalid.")
 
-if len(rcff_files) == 0:
-    print_error_and_terminate("The passed directory containing RCFF has no rcff files in it.")
 
-# The RNN should be saved with the rcff files, if it isn't otherwised specified.
-if save == DEFAULT_RNN_SNAPSHOT_NAME:
-    save = os.path.join(rcff, save)
+def teach_rnn(save_name):
+    file_check(use, "use")
 
-if not os.path.exists(os.path.dirname(save)):
-    print_error_and_terminate("The directory provided for save does not exist. Please save the RNN in an already existing directory ")
+    if not os.path.isdir(teach):
+        print_error_and_terminate("The passed directory containing RCFF files does not exist.")
 
-# If save has been specified and update has not been, then the user cannot specify a save location that already exists.
-if update is None and os.path.exists(save):
+    rcff_files = get_rcff_files()
+    if len(rcff_files) == 0:
+        print_error_and_terminate("The passed directory containing RCFF has no rcff files in it.")
+
+    # The RNN should be saved with the rcff files, if it isn't otherwised specified.
+    if save_name == DEFAULT_RNN_SNAPSHOT_NAME:
+        save_name = os.path.join(teach, save_name)
+
+    if not os.path.exists(os.path.dirname(save_name)):
+        print_error_and_terminate(
+            "The directory provided for save does not exist. Please save the RNN in an already existing directory ")
+
+    # If --save has been specified and --update has not been, then the user cannot specify a save location that already exists.
+    if use is None and os.path.exists(save_name):
         print_error_and_terminate("The save name and location given already exists. "
-                                  "If you wish to alter the already existing RNN snapshot, "
-                                  "please use the --update flag, instead of the --save flag.")
+                                  "If you wish to use the already existing RNN snapshot, "
+                                  "please use the --use flag, instead of the --save flag.")
 
-for rcff_file in rcff_files:
-    # Insert the actual Instructor code here
-    file_name = os.path.basename(rcff_file)
+    network = NeuralNetwork()
 
-    dummy_file = 0
-    if update is not None:
-        dummy_file = open(update, 'a')
-        dummy_file.write("Hello")
+    for rcff_file in rcff_files:
+        file_name = os.path.basename(rcff_file)
+
+        if use is not None:
+            network.load(use)
+
+        file_handler = open(rcff_file, 'rb')
+
+        network.train(RCFF.RCFF.unpickle(file_handler))
+
+        file_handler.close()
+
+        if save_name is not None:
+            network.save(save_name)
+        elif use is not None:
+            network.save(use)
+
+        print("Current File: " + file_name)
+
+if create == -1:
+    teach_rnn(save)
+else:
+    network = NeuralNetwork()
+    if use is not None:
+        network.load(use)
     else:
-        dummy_file = open(save, 'w')
+        print_error_and_terminate("Input a valid RNN file.")
 
-
-    print("Current File: " + file_name)
+    for i in range(0, create):
+        network.sample(os.path.join(os.path.dirname(use), uuid.uuid4(), ".rcff"))
 
 print("\nSuccessful input.")

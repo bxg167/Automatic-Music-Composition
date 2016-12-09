@@ -35,7 +35,7 @@ class RCFF(object):
         return retval
 
     def pickle(self, file_handler):
-        pickle.dump(self, file_handler, protocol=2)
+        pickle.dump(self, file_handler)
 
     @staticmethod
     def unpickle(file_handler):

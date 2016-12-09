@@ -1,6 +1,4 @@
-from __future__ import print_function
-
-midi_instrument_dictionary = dict(zip([
+midi_instrument_list = [
 "Piano",
 "Bright Piano",
 "Electric Grand",
@@ -129,6 +127,8 @@ midi_instrument_dictionary = dict(zip([
 "Helicopter",
 "Applause",
 "Gunshot",
-], range(0, 128)))
+]
 
-print(midi_instrument_dictionary)
+midi_instrument_dictionary = dict(zip(midi_instrument_list, range(0, 128)))
+
+print midi_instrument_dictionary

@@ -16,12 +16,16 @@ class Mediator:
             c = Converter(os.path.join(folder_dir, file_name))
             rcff_files = c.create_rcff_files()
         except TypeError:
+            raise
             return Exception
         except KeyError:
+            raise
             return Exception
         except Warning:
+            raise
             return Exception
         except Exception:
+            raise
             return Exception
 
         i = 0

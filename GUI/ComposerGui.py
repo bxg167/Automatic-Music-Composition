@@ -6,6 +6,7 @@ from File_Conversion.ConvertRcffToMidi import ConvertRcffToMidi
 from File_Conversion.RCFF import RCFF
 from GUI.FileEntry import FileEntry
 from GUI.SaveAs import SaveAs
+from GUI.midi_instruments import midi_instrument_list
 from PopUp import PopUp
 
 import os
@@ -13,7 +14,7 @@ import os
 SNAPSHOT_EXTENSION = ".rcff"
 
 MIN_HEIGHT = 125
-MIN_WIDTH = 260
+MIN_WIDTH = 285
 
 window = Tk()
 
@@ -21,21 +22,39 @@ window.geometry("440x" + str(MIN_HEIGHT))
 window.minsize(width=MIN_WIDTH, height=MIN_HEIGHT)
 window.resizable(width=TRUE, height=FALSE)
 
-path_entry = FileEntry(window, SNAPSHOT_EXTENSION)
+# ------------------First Row------------------
+first_row = Frame(window)
+path_entry = FileEntry(first_row, SNAPSHOT_EXTENSION)
 
-label = Label(path_entry, text="RNN Snapshot")
+
+label = Label(path_entry, text="RCFF Files")
 label.pack(side=LEFT)
 
 path_entry.pack(fill=X, expand=YES, padx=10, pady=10)
 
-created_text = Label(window)
+created_text = Label(first_row)
 created_text.pack(fill=X)
+
+first_row.pack(fill=X, expand=YES)
+
+
+# ------------------Second Row------------------
+second_row = Frame(window)
+label = Label(second_row, text="Instrument Selection: ")
+spinbox = Spinbox(second_row, from_=0, to=127, values=midi_instrument_list, wrap=True)
+label.pack(side=LEFT)
+spinbox.pack(side=LEFT)
+second_row.pack(fill=X, expand=YES)
 
 
 #Place holder for actual method
 def start_process(midi_file_location):
     print "Composing: " + midi_file_location
+
+    print path_entry.field.get()
     c = ConvertRcffToMidi(path_entry.field.get())
+
+    # TODO: Send Instrument value.
     midi_object = c.create_midi()
 
     # The midi file should be written from the GUI, just as rcff files are. For now, we'll leave it here
@@ -56,11 +75,14 @@ def open_save_as():
     else:
         created_text.configure(text="Not Completed.")
 
+# ------------------Third Row------------------
 
-start_button = Button(window, text="Start", width=6)
+# ------------------Fourth Row------------------
+fourth_row = Frame(window)
+start_button = Button(fourth_row, text="Start", width=6)
 
 start_button.pack(padx=5, pady=5)
-
+fourth_row.pack(side=BOTTOM)
 
 def run():
     folder_dir = path_entry.field.get()
