@@ -105,7 +105,7 @@ def create_rcffs():
     else:
         print_error_and_terminate("Input a valid RNN file.")
     for i in range(0, create):
-        network.sample(os.path.join(os.path.dirname(use), str(uuid.uuid4()), ".rcff"))
+        network.sample(os.path.join(os.path.dirname(use), str(uuid.uuid4()), ".rcff"), num_iters=2000)
 
 
 if create == -1:

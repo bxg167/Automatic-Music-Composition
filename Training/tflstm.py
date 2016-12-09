@@ -78,10 +78,14 @@ class NeuralNetwork():
             seed = [[0]*self.vector_size]
             seed[0][74] = 1
         for i in range(num_iters):
+            print "Working on timeslice: " + str(i)
+
             result = self.predict.eval(session=self.sess, feed_dict={self.series: [seed + [[0]*self.vector_size]]})
             result_last = result[-1,:]
             seed.append(list(result_last))
+
         retval = RCFF.RCFF('generated', 120, 0)
+        i = 0
         for notes in seed:
             message_vec = notes[129:139]
             ts = TimeSlice.TimeSlice(int(notes.index(max(notes[0:128]))), int(notes[128]), int(message_vec.index(max(message_vec))))
