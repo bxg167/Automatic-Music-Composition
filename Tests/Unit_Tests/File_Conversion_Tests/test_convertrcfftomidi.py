@@ -17,7 +17,7 @@ class TestConvertRcffToMidi(TestCase):
     def test_rcff_build(self):
         rcff_path = os.path.abspath(os.path.join(file_path, "empty.rcff"))
         file_handler = open(rcff_path)
-        RCFF.unpickle(rcff_path)
+        RCFF.unpickle(file_handler)
         file_handler.close()
 
     # pattern holds tracks hold events
@@ -38,7 +38,6 @@ class TestConvertRcffToMidi(TestCase):
         test_rcff.add_time_slice_to_body(TimeSlice(60, 100, 9))
         test_rcff.add_time_slice_to_body(TimeSlice(60, 100, 1))
         test_rcff.add_time_slice_to_body(TimeSlice(60, 100, 8))
-        print "test_rcff.body = ", test_rcff.body
         convertR2M.__set_rcff__(test_rcff)
         pattern = convertR2M.create_midi()
 
@@ -70,7 +69,6 @@ class TestConvertRcffToMidi(TestCase):
         test_rcff.add_time_slice_to_body(TimeSlice(0, 0, 8))
         convertR2M.__set_rcff__(test_rcff)
         pattern = convertR2M.create_midi()
-        print "hello", pattern, pattern[0]
 
         self.assertEquals(1, len(pattern))
         self.assertEquals(10, len(pattern[0]))
