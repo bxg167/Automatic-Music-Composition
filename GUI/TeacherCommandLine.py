@@ -47,16 +47,9 @@ teach = args.teach
 
 if create == -1 and teach is None:
     print_error_and_terminate("No action commands were given. To use this program, use the either the --teach or the --create arguments, but not both")
+
 elif create != -1 and teach is not None:
     print_error_and_terminate("Two action command were given. To use this program, only use --teach or only use --create, not both")
-
-if create <= 0 and create != -1:
-    print_error_and_terminate("The requested number of rcff files to make is less than 1.")
-
-if use is not None:
-    if os.path.isdir(use):
-        print_error_and_terminate("The path given for use is invalid.")
-
 
 def teach_rnn(save_name):
     file_check(use, "use")
@@ -103,16 +96,23 @@ def teach_rnn(save_name):
 
         print("Current File: " + file_name)
 
-if create == -1:
-    teach_rnn(save)
-else:
+
+def create_rcffs():
+    if create <= 0:
+        print_error_and_terminate("The requested number of rcff files to make is less than 1.")
+
     network = NeuralNetwork()
     if use is not None:
         network.load(use)
     else:
         print_error_and_terminate("Input a valid RNN file.")
-
     for i in range(0, create):
         network.sample(os.path.join(os.path.dirname(use), uuid.uuid4(), ".rcff"))
+
+
+if create == -1:
+    teach_rnn(save)
+else:
+    create_rcffs()
 
 print("\nSuccessful input.")

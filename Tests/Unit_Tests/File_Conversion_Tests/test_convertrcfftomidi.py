@@ -9,13 +9,19 @@ from File_Conversion.ConvertRcffToMidi import ConvertRcffToMidi
 
 file_path = os.path.dirname(__file__)
 
-class TestConvertRcffToMidi(TestCase):
- # pattern holds tracks hold events
 
+class TestConvertRcffToMidi(TestCase):
+
+    # Needed to fix a bug with coverage.py. Coverage.py neglected to import copy_reg,
+    # which is used in unpickle. This dummy test forces the import and allows the tests to run
+    def test_rcff_build(self):
+        rcff_path = os.path.abspath(os.path.join(file_path, "empty.rcff"))
+        file_handler = open(rcff_path)
+        RCFF.unpickle(rcff_path)
+        file_handler.close()
+
+    # pattern holds tracks hold events
     def test_create_midi_from_track_with_no_useful_info(self):
-        a = copy_reg.__all__
-        if a is None:
-            print
         # convert empty rcff
         convertR2M = ConvertRcffToMidi(os.path.abspath(os.path.join(file_path, "empty.rcff")))
         pattern = convertR2M.create_midi()

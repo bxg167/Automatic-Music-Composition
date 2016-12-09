@@ -6,7 +6,7 @@ from File_Conversion.ConvertRcffToMidi import ConvertRcffToMidi
 from File_Conversion.RCFF import RCFF
 from GUI.FileEntry import FileEntry
 from GUI.SaveAs import SaveAs
-from GUI.midi_instruments import midi_instrument_list
+from GUI.midi_instruments import *
 from PopUp import PopUp
 
 import os
@@ -53,7 +53,8 @@ def start_process(midi_file_location):
 
     # TODO: Send Instrument value.
 
-    midi_object = c.create_midi()
+    instrument_string = spinbox.get()
+    midi_object = c.create_midi(midi_instrument_dictionary.get(instrument_string))
 
     # The midi file should be written from the GUI, just as rcff files are. For now, we'll leave it here
     if not os.path.exists(midi_file_location):

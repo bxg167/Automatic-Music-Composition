@@ -1,4 +1,3 @@
-import copy_reg
 import os
 
 import midi
