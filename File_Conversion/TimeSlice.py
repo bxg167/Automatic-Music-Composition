@@ -25,4 +25,3 @@ class TimeSlice(object):
         message_str += ' at '
         message_str += str(self.volume)
         return message_str
-        

@@ -7,6 +7,7 @@ from File_Conversion.Converter import Converter
 
 file_path = os.path.dirname(__file__)
 
+
 class TestConverter(TestCase):
     def test_extract_data_from_track_with_no_useful_info(self):
         pattern = midi.read_midifile(os.path.abspath(os.path.join(file_path, "mary.mid")))

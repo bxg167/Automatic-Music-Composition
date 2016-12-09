@@ -9,12 +9,6 @@ from ProgressBar import ProgressBar
 from PathEntry import PathEntry
 
 import os
-# import sys
-# import pip
-#
-#
-# def install():
-#     pip.main(['install', 'python-midi'])
 
 MIN_HEIGHT = 125
 MIN_WIDTH = 260
@@ -44,8 +38,9 @@ action_buttons.pack(fill=X, padx=5)
 
 def run():
     folder_dir = path_entry.field.get()
+    folder_dir.replace('\"', '')
     if not os.path.isdir(folder_dir):
-        pop_up = PopUp("Not a valid directory")
+        PopUp("Not a valid directory")
         return
 
     action_buttons.set_running()

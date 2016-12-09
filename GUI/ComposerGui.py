@@ -3,7 +3,6 @@ from Tkinter import *
 import midi
 
 from File_Conversion.ConvertRcffToMidi import ConvertRcffToMidi
-from File_Conversion.RCFF import RCFF
 from GUI.FileEntry import FileEntry
 from GUI.SaveAs import SaveAs
 from GUI.midi_instruments import *
@@ -43,15 +42,13 @@ label.pack(side=LEFT)
 spinbox.pack(side=LEFT)
 second_row.pack(fill=X, expand=YES)
 
-
-#Place holder for actual method
 def start_process(midi_file_location):
     status_label.config(text="Composing: " + midi_file_location)
 
-    print path_entry.field.get()
-    c = ConvertRcffToMidi(path_entry.field.get())
+    file_dir = path_entry.field.get()
+    file_dir.replace('\"', '')
 
-    # TODO: Send Instrument value.
+    c = ConvertRcffToMidi(file_dir)
 
     instrument_string = spinbox.get()
     midi_object = c.create_midi(midi_instrument_dictionary.get(instrument_string))
@@ -86,6 +83,7 @@ start_button = Button(fourth_row, text="Start", width=6)
 
 start_button.pack(padx=5, pady=5)
 fourth_row.pack()
+
 
 def run():
     file_dir = path_entry.field.get()

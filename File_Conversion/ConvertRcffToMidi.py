@@ -26,11 +26,12 @@ class ConvertRcffToMidi:
     def create_midi(self, instrument=0):
         r = self.__rcff
         self.__rcff.instrument = instrument
-        # Instantiate a MIDI Pattern (contains a list of tracks)
+
         pattern = midi.Pattern(format=1, resolution=480)
+
         # Instantiate a MIDI Track (contains a list of MIDI events)
         track = midi.Track()
-        # Append the track to the pattern
+
         pattern.append(track)
 
         # Assign instrument information. If we don't do this, it would default to piano
@@ -45,21 +46,22 @@ class ConvertRcffToMidi:
         ticks_per_time_slice = pattern.resolution / 4
 
         # Iterate over timeslices in RCFF, creating midi note events as appropriate
-        # print "volume\tpitch\tmessage"
         for timeSlice in r.body:
-            # print timeSlice.volume, "\t", timeSlice.pitch, "\t\t", timeSlice.message
             if timeSlice.message == TimeSlice.BEGIN:
+
                 # Set up tracking variables
                 slice_count = 0
             elif timeSlice.message == TimeSlice.END:
                 # Create NoteOnEvent for the note now that we know the volume and pitch
                 on = midi.NoteOnEvent(tick=0, velocity=volume, pitch=pitch)
                 track.append(on)
-                # Calculate note length based on tracking variable
+
                 length = slice_count * ticks_per_time_slice
+
                 # Add corresponding NoteOffEvent after appropriate ticks
                 off = midi.NoteOffEvent(tick=length, pitch=pitch)
                 track.append(off)
+
             elif timeSlice.message == TimeSlice.BEAT:
                 slice_count += 1
                 pitch = timeSlice.pitch
@@ -72,27 +74,7 @@ class ConvertRcffToMidi:
         eot = midi.EndOfTrackEvent(tick=1)
         track.append(eot)
 
-        # print(pattern)
         return pattern
-
-
-# The run function does the work that the gui should do: It collects a path for an rcff, makes an RCFF object,
-# creates a midi file from it, and saves that midi in a file
-
-def run(rcff_file_path, new_midi_location):
-    c = ConvertRcffToMidi(rcff_file_path)
-    midi_object = c.create_midi()
-
-    # The midi file should be written from the GUI, just as rcff files are. For now, we'll leave it here
-    if not os.path.exists(new_midi_location):
-        midi.write_midifile(new_midi_location, midi_object)
-
-# hardcoded right now, sorry
-# run("C:\\Users\\Cassidy\\PycharmProjects\\Automatic-Music-Composition\\RCFF_Test\\RCFF_Files\\output_4notes_0.rcff",
-#     "C:\\Users\\Cassidy\\PycharmProjects\\Automatic-Music-Composition\\RCFF_Test\\RCFF_Files\\converted4.mid")
-# run("C:\\Users\\Cassidy\\PycharmProjects\\Automatic-Music-Composition\\2\\3_RCFF_Files\\3ravens3_0.rcff",
-#     "C:\\Users\\Cassidy\\PycharmProjects\\Automatic-Music-Composition\\2\\3_RCFF_Files\\3ravens3_0.mid")
-
 
 # CONSIDERATIONS
 #
