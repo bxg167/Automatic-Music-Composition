@@ -48,8 +48,8 @@ elif create != -1 and teach is not None:
     print_error_and_terminate("Two action command were given. To use this program, only use --teach or only use --create, not both")
 
 
-def teach_rnn(save_name):
-    file_check(use, "use")
+def teach_rnn(save_name, rnn_location):
+    file_check(rnn_location, "use")
 
     if not os.path.isdir(teach):
         print_error_and_terminate("The passed directory containing RCFF files does not exist.")
@@ -67,7 +67,7 @@ def teach_rnn(save_name):
             "The directory provided for save does not exist. Please save the RNN in an already existing directory ")
 
     # If --save has been specified and --update has not been, then the user cannot specify a save location that already exists.
-    if use is None and os.path.exists(save_name):
+    if rnn_location is None and os.path.exists(save_name):
         print_error_and_terminate("The save name and location given already exists. "
                                   "If you wish to use the already existing RNN snapshot, "
                                   "please use the --use flag, instead of the --save flag.")
@@ -77,9 +77,10 @@ def teach_rnn(save_name):
     for rcff_file in rcff_files:
         file_name = os.path.basename(rcff_file)
 
-        if use is not None:
-            use = use.replace(".index", "")
-            network.load(use)
+        if rnn_location is not None:
+            rnn_location = rnn_location.replace(".index", "")
+
+            network.load(rnn_location)
 
         file_handler = open(rcff_file, 'rb')
 
@@ -89,8 +90,8 @@ def teach_rnn(save_name):
 
         if save_name is not None:
             network.save(save_name)
-        elif use is not None:
-            network.save(use)
+        elif rnn_location is not None:
+            network.save(rnn_location)
 
         print("Current File: " + file_name)
 
@@ -109,6 +110,6 @@ def create_rcffs():
 
 
 if create == -1:
-    teach_rnn(save)
+    teach_rnn(save, use)
 else:
     create_rcffs()

@@ -81,7 +81,7 @@ class NeuralNetwork():
             seed[0][74] = 1
         num_iters -= len(seed)
         for i in range(num_iters):
-            print "Working on timeslice: " + str(i)
+            print("Working on timeslice: " + str(i))
 
             result = self.predict.eval(session=self.sess, feed_dict={self.series: [seed + [[0]*self.vector_size]]})
             result_last = result[-1,:]
