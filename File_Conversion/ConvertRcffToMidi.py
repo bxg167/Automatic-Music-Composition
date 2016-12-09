@@ -20,7 +20,7 @@ class ConvertRcffToMidi:
             raise Exception("The file passed doesn't exist")
 
     # for testing purposes
-    def __set_rcff__(self,rcff):
+    def __set_rcff__(self, rcff):
         self.__rcff = rcff
 
     def create_midi(self):

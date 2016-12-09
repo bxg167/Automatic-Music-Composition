@@ -44,7 +44,6 @@ class TrainingFunctionalTests(TestCase):
                 RCFF.unpickle(rcff)
 
 
-
     def get_log_files(self, path):
         log_files = []
 

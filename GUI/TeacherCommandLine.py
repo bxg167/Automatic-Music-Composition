@@ -4,7 +4,7 @@ import uuid
 
 from Training.tflstm import *
 
-DEFAULT_RNN_SNAPSHOT_NAME = "default.snapshot"
+DEFAULT_RNN_SNAPSHOT_NAME = "default"
 
 
 def print_error_and_terminate(error_message):
@@ -30,7 +30,7 @@ parser = argparse.ArgumentParser(prog="Teacher")
 
 # Optional Parameters
 parser.add_argument("-T", "--teach", help="RCFF Folder that will be taught to the RNN.\nCannot be used with the --create command", metavar="RCFF_FOLDER_PATH")
-parser.add_argument("-U", "--use", help="The location of an already existing RNN", metavar="RNN_NAME")
+parser.add_argument("-U", "--use", help="The location of an already existing RNN (Ends with .index", metavar="RNN_NAME")
 parser.add_argument("-S", "--save", help="The desired location and name given to the new RNN snapshot", metavar="SAVE_PATH", default=DEFAULT_RNN_SNAPSHOT_NAME)
 parser.add_argument("-C", "--create", help="The Number of RCFF files that should be made\nCannot be used with the --teach command", metavar="NUMBER_OF_RCFF_TO_MAKE", type=int, default=-1)
 
@@ -78,6 +78,7 @@ def teach_rnn(save_name):
         file_name = os.path.basename(rcff_file)
 
         if use is not None:
+            use = use.replace(".index", "")
             network.load(use)
 
         file_handler = open(rcff_file, 'rb')
@@ -104,7 +105,7 @@ def create_rcffs():
     else:
         print_error_and_terminate("Input a valid RNN file.")
     for i in range(0, create):
-        network.sample(os.path.join(os.path.dirname(use), uuid.uuid4(), ".rcff"))
+        network.sample(os.path.join(os.path.dirname(use), str(uuid.uuid4()), ".rcff"))
 
 
 if create == -1:

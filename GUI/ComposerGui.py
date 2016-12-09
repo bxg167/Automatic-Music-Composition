@@ -46,7 +46,7 @@ def start_process(midi_file_location):
     status_label.config(text="Composing: " + midi_file_location)
 
     file_dir = path_entry.field.get()
-    file_dir.replace('\"', '')
+    file_dir = file_dir.replace('\"', '')
 
     instrument_string = spinbox.get()
 
@@ -68,7 +68,10 @@ def open_save_as(starting_folder_dir):
     browser.wait_window()
 
     if browser.selection != "":
-        start_process(browser.selection)
+        try:
+            start_process(browser.selection)
+        except Exception:
+            status_label.configure(text="An error has occurred.")
     else:
         status_label.configure(text="Not Completed.")
 
@@ -89,6 +92,7 @@ fourth_row.pack()
 def run():
     file_dir = path_entry.field.get()
 
+    file_dir = file_dir.replace('\"', '')
     if not os.path.isfile(file_dir):
         PopUp("Not a valid file")
         return
