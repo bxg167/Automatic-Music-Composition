@@ -38,7 +38,8 @@ action_buttons.pack(fill=X, padx=5)
 
 def run():
     folder_dir = path_entry.field.get()
-    folder_dir.replace('\"', '')
+    folder_dir = folder_dir.replace('\"', '')
+
     if not os.path.isdir(folder_dir):
         PopUp("Not a valid directory")
         return

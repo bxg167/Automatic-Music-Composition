@@ -48,7 +48,6 @@ class TrainingFunctionalTests(TestCase):
         self.assertRaises(Exception, uuid.uuid4())
 
 
-
     def get_log_files(self, path):
         log_files = []
 

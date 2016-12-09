@@ -130,5 +130,3 @@ midi_instrument_list = [
 ]
 
 midi_instrument_dictionary = dict(zip(midi_instrument_list, range(0, 128)))
-
-print midi_instrument_dictionary
