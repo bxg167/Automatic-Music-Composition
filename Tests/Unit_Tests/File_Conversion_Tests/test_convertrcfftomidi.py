@@ -1,6 +1,5 @@
 import os
 from unittest.case import TestCase
-import copy_reg
 import midi
 from File_Conversion.RCFF import RCFF
 from File_Conversion.TimeSlice import TimeSlice

@@ -51,21 +51,23 @@ class NeuralNetwork():
 
         train_series = [train_series]
         snapshot_num = 0
-        for i in range(num_iters):
-            try:
-                for j in range(len(train_series)):
-                    this_train_series = train_series[j]
-                    self.sess.run(self.minimize,{self.series: [this_train_series]})
-                if i % 10 == 0:
-                    #TODO: delete last temp snapshot
-                    #saver.save(sess, "C:\\temp_snapshot_" + str(snapshot_num))
-                    #snapshot_num += 1
-                    pass
-                print('done iter' + str(i))
-                sys.stdout.flush()
-            except RuntimeException:
-                with open('error.log', 'w') as logfile:
+        with open('error.log', 'w') as logfile:
+            logfile.write('starting!\n')
+            for i in range(num_iters):
+                try:
+                    for j in range(len(train_series)):
+                        this_train_series = train_series[j]
+                        self.sess.run(self.minimize,{self.series: [this_train_series]})
+                    if i % 10 == 0:
+                        #TODO: delete last temp snapshot
+                        #saver.save(sess, "C:\\temp_snapshot_" + str(snapshot_num))
+                        #snapshot_num += 1
+                        pass
+                    print('done iter' + str(i))
+                    sys.stdout.flush()
+                except RuntimeException:
                     logfile.write(traceback.format_exc())
+            logfile.write('finished!\n')
 
     def save(self, save_path):
         self.saver.save(self.sess, save_path)
@@ -73,15 +75,20 @@ class NeuralNetwork():
     def load(self, load_path):
         self.saver.restore(self.sess, load_path)
 
-    def sample(self, rcff_dest_path, num_iters, seed=None):
+    def sample(self, rcff_dest_path, num_iters=300, seed=None):
         if not seed:
             seed = [[0]*self.vector_size]
             seed[0][74] = 1
+        num_iters -= len(seed)
         for i in range(num_iters):
+            print("Working on timeslice: " + str(i))
+
             result = self.predict.eval(session=self.sess, feed_dict={self.series: [seed + [[0]*self.vector_size]]})
             result_last = result[-1,:]
             seed.append(list(result_last))
+
         retval = RCFF.RCFF('generated', 120, 0)
+        i = 0
         for notes in seed:
             message_vec = notes[129:139]
             ts = TimeSlice.TimeSlice(int(notes.index(max(notes[0:128]))), int(notes[128]), int(message_vec.index(max(message_vec))))
@@ -91,65 +98,60 @@ class NeuralNetwork():
             retval.pickle(rcff_dest_file)
         return retval   
 
-def validate_rcff(rcff):
-    mode = 'ready' # ready, something, note, rest
-    in_note = -1
-    rcff_new = RCFF.RCFF('generated', 120, 0)
-    for ts in rcff.body:
-        if mode == 'ready':
-            if ts.message == 0: # REST
-                rcff_new.body.append(TimeSlice.TimeSlice(0, 0, 9))
-                rcff_new.body.append(ts)
-                mode = 'rest'
-            elif ts.message == 1: # BEAT
-                rcff_new.body.append(TimeSlice.TimeSlice(0, 0, 9))
-                rcff_new.body.append(ts)
-                mode = 'note'
-            elif ts.message == 9: # BEGIN
-                rcff_new.body.append(ts)
-                mode = 'something'
-            elif ts.message == 8: # END
-                pass
-        elif mode == 'note':
-            if ts.message == 0: # REST
-                pass
-            elif ts.message == 1: # BEAT
-                rcff_new.body.append(ts)
-            elif ts.message == 9: # BEGIN
-                rcff_new.body.append(TimeSlice.TimeSlice(0, 0, 8))
-                rcff_new.body.append(ts)
-                mode = 'something'
-            elif ts.message == 8: # END
-                rcff_new.body.append(ts)
-                mode = 'ready'
-        elif mode == 'rest':
-            if ts.message == 0: # REST
-                rcff_new.body.append(ts)
-            elif ts.message == 1: # BEAT
-                pass
-            elif ts.message == 9: # BEGIN
-                rcff_new.body.append(TimeSlice.TimeSlice(0, 0, 8))
-                rcff_new.body.append(ts)
-                mode = 'something'
-            elif ts.message == 8: # END
-                rcff_new.body.append(ts)
-                mode = 'ready'
-        elif mode == 'something':
-            if ts.message == 0: # REST
-                rcff_new.body.append(ts)
-                mode = 'rest'
-            elif ts.message == 1: # BEAT
-                rcff_new.body.append(ts)
-                mode = 'note'
-            elif ts.message == 9: # BEGIN
-                pass
-            elif ts.message == 8: # END
-                rcff_new.body.append(ts)
-                mode = 'ready'
-        with open('destfile.rcff', 'wb') as rcff_dest_file:
-            rcff_new.pickle(rcff_dest_file)
-
-if __name__ == '__main__':
-    nn = NeuralNetwork()
-    with open('destfile.rcff', 'rb') as rcff:
-        nn.train(RCFF.RCFF.unpickle(rcff), 1)
+    def validate_rcff(rcff):
+        mode = 'ready' # ready, something, note, rest
+        in_note = -1
+        rcff_new = RCFF.RCFF('generated', 120, 0)
+        for ts in rcff.body:
+            if mode == 'ready':
+                if ts.message == 0: # REST
+                    rcff_new.body.append(TimeSlice.TimeSlice(0, 0, 9))
+                    rcff_new.body.append(ts)
+                    mode = 'rest'
+                elif ts.message == 1: # BEAT
+                    rcff_new.body.append(TimeSlice.TimeSlice(0, 0, 9))
+                    rcff_new.body.append(ts)
+                    mode = 'note'
+                elif ts.message == 9: # BEGIN
+                    rcff_new.body.append(ts)
+                    mode = 'something'
+                elif ts.message == 8: # END
+                    pass
+            elif mode == 'note':
+                if ts.message == 0: # REST
+                    pass
+                elif ts.message == 1: # BEAT
+                    rcff_new.body.append(ts)
+                elif ts.message == 9: # BEGIN
+                    rcff_new.body.append(TimeSlice.TimeSlice(0, 0, 8))
+                    rcff_new.body.append(ts)
+                    mode = 'something'
+                elif ts.message == 8: # END
+                    rcff_new.body.append(ts)
+                    mode = 'ready'
+            elif mode == 'rest':
+                if ts.message == 0: # REST
+                    rcff_new.body.append(ts)
+                elif ts.message == 1: # BEAT
+                    pass
+                elif ts.message == 9: # BEGIN
+                    rcff_new.body.append(TimeSlice.TimeSlice(0, 0, 8))
+                    rcff_new.body.append(ts)
+                    mode = 'something'
+                elif ts.message == 8: # END
+                    rcff_new.body.append(ts)
+                    mode = 'ready'
+            elif mode == 'something':
+                if ts.message == 0: # REST
+                    rcff_new.body.append(ts)
+                    mode = 'rest'
+                elif ts.message == 1: # BEAT
+                    rcff_new.body.append(ts)
+                    mode = 'note'
+                elif ts.message == 9: # BEGIN
+                    pass
+                elif ts.message == 8: # END
+                    rcff_new.body.append(ts)
+                    mode = 'ready'
+            with open('destfile.rcff', 'wb') as rcff_dest_file:
+                rcff_new.pickle(rcff_dest_file)

@@ -4,7 +4,7 @@ import uuid
 
 from Training.tflstm import *
 
-DEFAULT_RNN_SNAPSHOT_NAME = "default.snapshot"
+DEFAULT_RNN_SNAPSHOT_NAME = "default"
 
 
 def print_error_and_terminate(error_message):
@@ -30,7 +30,7 @@ parser = argparse.ArgumentParser(prog="Teacher")
 
 # Optional Parameters
 parser.add_argument("-T", "--teach", help="RCFF Folder that will be taught to the RNN.\nCannot be used with the --create command", metavar="RCFF_FOLDER_PATH")
-parser.add_argument("-U", "--use", help="The location of an already existing RNN", metavar="RNN_NAME")
+parser.add_argument("-U", "--use", help="The location of an already existing RNN (Ends with .index", metavar="RNN_NAME")
 parser.add_argument("-S", "--save", help="The desired location and name given to the new RNN snapshot", metavar="SAVE_PATH", default=DEFAULT_RNN_SNAPSHOT_NAME)
 parser.add_argument("-C", "--create", help="The Number of RCFF files that should be made\nCannot be used with the --teach command", metavar="NUMBER_OF_RCFF_TO_MAKE", type=int, default=-1)
 
@@ -48,8 +48,8 @@ elif create != -1 and teach is not None:
     print_error_and_terminate("Two action command were given. To use this program, only use --teach or only use --create, not both")
 
 
-def teach_rnn(save_name):
-    file_check(use, "use")
+def teach_rnn(save_name, rnn_location):
+    file_check(rnn_location, "use")
 
     if not os.path.isdir(teach):
         print_error_and_terminate("The passed directory containing RCFF files does not exist.")
@@ -67,7 +67,7 @@ def teach_rnn(save_name):
             "The directory provided for save does not exist. Please save the RNN in an already existing directory ")
 
     # If --save has been specified and --update has not been, then the user cannot specify a save location that already exists.
-    if use is None and os.path.exists(save_name):
+    if rnn_location is None and os.path.exists(save_name):
         print_error_and_terminate("The save name and location given already exists. "
                                   "If you wish to use the already existing RNN snapshot, "
                                   "please use the --use flag, instead of the --save flag.")
@@ -77,8 +77,10 @@ def teach_rnn(save_name):
     for rcff_file in rcff_files:
         file_name = os.path.basename(rcff_file)
 
-        if use is not None:
-            network.load(use)
+        if rnn_location is not None:
+            rnn_location = rnn_location.replace(".index", "")
+
+            network.load(rnn_location)
 
         file_handler = open(rcff_file, 'rb')
 
@@ -88,8 +90,8 @@ def teach_rnn(save_name):
 
         if save_name is not None:
             network.save(save_name)
-        elif use is not None:
-            network.save(use)
+        elif rnn_location is not None:
+            network.save(rnn_location)
 
         print("Current File: " + file_name)
 
@@ -104,10 +106,10 @@ def create_rcffs():
     else:
         print_error_and_terminate("Input a valid RNN file.")
     for i in range(0, create):
-        network.sample(os.path.join(os.path.dirname(use), uuid.uuid4(), ".rcff"))
+        network.sample(os.path.join(os.path.dirname(use), str(uuid.uuid4()), ".rcff"), num_iters=2000)
 
 
 if create == -1:
-    teach_rnn(save)
+    teach_rnn(save, use)
 else:
     create_rcffs()
