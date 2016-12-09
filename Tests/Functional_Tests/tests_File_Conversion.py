@@ -36,7 +36,6 @@ class FileConversionFunctionalTests(TestCase):
         count = 0
         length = 120
         res = 480
-        print "length ", len(rcff)
         for ts in rcff[0].body:
             self.assertEquals(ts.pitch, note)
             self.assertEquals(ts.volume,vol)
@@ -124,7 +123,7 @@ class FileConversionFunctionalTests(TestCase):
 
     # Case 2.1.10
     def test_exception_with_bad_file(self):
-        self.assertRaises(TypeError, self.create_rcff_files, "TextDocument.mid")
+        self.assertRaises(Exception, self.create_rcff_files, "TextDocument.mid")
 
     # No test case id.
     # This test was added to test what happens when a bad path is given to Converter's constructor.

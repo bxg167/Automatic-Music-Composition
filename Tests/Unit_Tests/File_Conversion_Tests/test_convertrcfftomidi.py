@@ -20,6 +20,10 @@ class TestConvertRcffToMidi(TestCase):
         RCFF.unpickle(file_handler)
         file_handler.close()
 
+    def test_bad_path(self):
+        with self.assertRaises(Exception):
+            ConvertRcffToMidi("this\\is\\a\\bad\\path.rcff")
+
     # pattern holds tracks hold events
     def test_create_midi_from_track_with_no_useful_info(self):
         # convert empty rcff

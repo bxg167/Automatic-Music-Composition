@@ -7,7 +7,13 @@ from File_Conversion.Converter import Converter
 
 file_path = os.path.dirname(__file__)
 
+
 class TestConverter(TestCase):
+
+    def test_bad_path(self):
+        with self.assertRaises(Exception):
+            Converter("this\\is\\a\\bad\\path.rcff")
+
     def test_create_rcff_file_from_track_with_no_useful_info(self):
 
         pattern = midi.read_midifile(os.path.abspath(os.path.join(file_path, "mary.mid")))
@@ -16,7 +22,8 @@ class TestConverter(TestCase):
 
         self.assertEquals(2, len(pattern))
 
-        # Mary may be passed in, but we are going to override the pattern saved by it. This is just so we can create the Converter Object
+        # Mary may be passed in, but we are going to override the pattern saved by it.
+        # This is just so we can create the Converter Object
         c = Converter(os.path.abspath(os.path.join(file_path, "mary.mid")))
 
         rcff = c.__create_rcff_file__(pattern[0],0)
@@ -35,7 +42,8 @@ class TestConverter(TestCase):
     def test_create_rcff_file_from_file_with_useful_info(self):
         pattern = midi.read_midifile(os.path.abspath(os.path.join(file_path, "bsax2.mid")))
 
-        # Mary may be passed in, but we are going to override the pattern saved by it. This is just so we can create the Converter Object
+        # Mary may be passed in, but we are going to override the pattern saved by it.
+        # This is just so we can create the Converter Object
         c = Converter(os.path.abspath(os.path.join(file_path, "mary.mid")))
 
         rcff = c.__create_rcff_file__(pattern[10],0)
@@ -47,7 +55,8 @@ class TestConverter(TestCase):
             time, length, pitch, volume = note
             expected_body_length += length
 
-        #self.assertEquals(expected_body_length, len(rcff.body)*c.resolution) #now includes rests so this wont work, checked in single note midi file test
+        # self.assertEquals(expected_body_length, len(rcff.body)*c.resolution)
+        # #now includes rests so this wont work, checked in single note midi file test
 
         self.assertEquals(65, rcff.instrument)
         self.assertEquals(0, rcff.tempo)
