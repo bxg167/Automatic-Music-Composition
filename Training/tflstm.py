@@ -91,65 +91,60 @@ class NeuralNetwork():
             retval.pickle(rcff_dest_file)
         return retval   
 
-def validate_rcff(rcff):
-    mode = 'ready' # ready, something, note, rest
-    in_note = -1
-    rcff_new = RCFF.RCFF('generated', 120, 0)
-    for ts in rcff.body:
-        if mode == 'ready':
-            if ts.message == 0: # REST
-                rcff_new.body.append(TimeSlice.TimeSlice(0, 0, 9))
-                rcff_new.body.append(ts)
-                mode = 'rest'
-            elif ts.message == 1: # BEAT
-                rcff_new.body.append(TimeSlice.TimeSlice(0, 0, 9))
-                rcff_new.body.append(ts)
-                mode = 'note'
-            elif ts.message == 9: # BEGIN
-                rcff_new.body.append(ts)
-                mode = 'something'
-            elif ts.message == 8: # END
-                pass
-        elif mode == 'note':
-            if ts.message == 0: # REST
-                pass
-            elif ts.message == 1: # BEAT
-                rcff_new.body.append(ts)
-            elif ts.message == 9: # BEGIN
-                rcff_new.body.append(TimeSlice.TimeSlice(0, 0, 8))
-                rcff_new.body.append(ts)
-                mode = 'something'
-            elif ts.message == 8: # END
-                rcff_new.body.append(ts)
-                mode = 'ready'
-        elif mode == 'rest':
-            if ts.message == 0: # REST
-                rcff_new.body.append(ts)
-            elif ts.message == 1: # BEAT
-                pass
-            elif ts.message == 9: # BEGIN
-                rcff_new.body.append(TimeSlice.TimeSlice(0, 0, 8))
-                rcff_new.body.append(ts)
-                mode = 'something'
-            elif ts.message == 8: # END
-                rcff_new.body.append(ts)
-                mode = 'ready'
-        elif mode == 'something':
-            if ts.message == 0: # REST
-                rcff_new.body.append(ts)
-                mode = 'rest'
-            elif ts.message == 1: # BEAT
-                rcff_new.body.append(ts)
-                mode = 'note'
-            elif ts.message == 9: # BEGIN
-                pass
-            elif ts.message == 8: # END
-                rcff_new.body.append(ts)
-                mode = 'ready'
-        with open('destfile.rcff', 'wb') as rcff_dest_file:
-            rcff_new.pickle(rcff_dest_file)
-
-if __name__ == '__main__':
-    nn = NeuralNetwork()
-    with open('destfile.rcff', 'rb') as rcff:
-        nn.train(RCFF.RCFF.unpickle(rcff), 1)
+    def validate_rcff(rcff):
+        mode = 'ready' # ready, something, note, rest
+        in_note = -1
+        rcff_new = RCFF.RCFF('generated', 120, 0)
+        for ts in rcff.body:
+            if mode == 'ready':
+                if ts.message == 0: # REST
+                    rcff_new.body.append(TimeSlice.TimeSlice(0, 0, 9))
+                    rcff_new.body.append(ts)
+                    mode = 'rest'
+                elif ts.message == 1: # BEAT
+                    rcff_new.body.append(TimeSlice.TimeSlice(0, 0, 9))
+                    rcff_new.body.append(ts)
+                    mode = 'note'
+                elif ts.message == 9: # BEGIN
+                    rcff_new.body.append(ts)
+                    mode = 'something'
+                elif ts.message == 8: # END
+                    pass
+            elif mode == 'note':
+                if ts.message == 0: # REST
+                    pass
+                elif ts.message == 1: # BEAT
+                    rcff_new.body.append(ts)
+                elif ts.message == 9: # BEGIN
+                    rcff_new.body.append(TimeSlice.TimeSlice(0, 0, 8))
+                    rcff_new.body.append(ts)
+                    mode = 'something'
+                elif ts.message == 8: # END
+                    rcff_new.body.append(ts)
+                    mode = 'ready'
+            elif mode == 'rest':
+                if ts.message == 0: # REST
+                    rcff_new.body.append(ts)
+                elif ts.message == 1: # BEAT
+                    pass
+                elif ts.message == 9: # BEGIN
+                    rcff_new.body.append(TimeSlice.TimeSlice(0, 0, 8))
+                    rcff_new.body.append(ts)
+                    mode = 'something'
+                elif ts.message == 8: # END
+                    rcff_new.body.append(ts)
+                    mode = 'ready'
+            elif mode == 'something':
+                if ts.message == 0: # REST
+                    rcff_new.body.append(ts)
+                    mode = 'rest'
+                elif ts.message == 1: # BEAT
+                    rcff_new.body.append(ts)
+                    mode = 'note'
+                elif ts.message == 9: # BEGIN
+                    pass
+                elif ts.message == 8: # END
+                    rcff_new.body.append(ts)
+                    mode = 'ready'
+            with open('destfile.rcff', 'wb') as rcff_dest_file:
+                rcff_new.pickle(rcff_dest_file)
