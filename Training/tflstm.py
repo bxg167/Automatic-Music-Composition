@@ -4,6 +4,7 @@ from File_Conversion import RCFF
 from File_Conversion import TimeSlice
 import pickle
 import sys
+import traceback
 
 class NeuralNetwork():
     def __init__(self):
@@ -51,16 +52,20 @@ class NeuralNetwork():
         train_series = [train_series]
         snapshot_num = 0
         for i in range(num_iters):
-            for j in range(len(train_series)):
-                this_train_series = train_series[j]
-                self.sess.run(self.minimize,{self.series: [this_train_series]})
-            if i % 10 == 0:
-                #TODO: delete last temp snapshot
-                #saver.save(sess, "C:\\temp_snapshot_" + str(snapshot_num))
-                #snapshot_num += 1
-                pass
-            print('done iter' + str(i))
-            sys.stdout.flush()
+            try:
+                for j in range(len(train_series)):
+                    this_train_series = train_series[j]
+                    self.sess.run(self.minimize,{self.series: [this_train_series]})
+                if i % 10 == 0:
+                    #TODO: delete last temp snapshot
+                    #saver.save(sess, "C:\\temp_snapshot_" + str(snapshot_num))
+                    #snapshot_num += 1
+                    pass
+                print('done iter' + str(i))
+                sys.stdout.flush()
+            except RuntimeException:
+                with open('error.log', 'w') as logfile:
+                    logfile.write(traceback.format_exc())
 
     def save(self, save_path):
         self.saver.save(self.sess, save_path)
@@ -145,5 +150,6 @@ def validate_rcff(rcff):
             rcff_new.pickle(rcff_dest_file)
 
 if __name__ == '__main__':
-	nn = NeuralNetwork()
-	nn.save('abcd')
+    nn = NeuralNetwork()
+    with open('destfile.rcff', 'rb') as rcff:
+        nn.train(RCFF.RCFF.unpickle(rcff), 1)
