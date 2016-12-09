@@ -6,11 +6,16 @@ from GUI.PopUp import PopUp
 
 
 class SaveAs(FolderBrowser):
-    def __init__(self):
+    def __init__(self, starting_dir):
         FolderBrowser.__init__(self)
 
         self.file_name_entry = Entry(self)
-        self.file_name_entry.pack(side=LEFT, padx=5, fill=X)
+        self.file_name_entry.pack(side=LEFT, padx=5, fill=X, expand=True)
+
+        self.working_directory = starting_dir
+
+        self.label_text.set("Current Directory: " + os.path.abspath(self.working_directory))
+        self.reset_selection()
 
     def add_button(self):
         select_button = Button(self, text="Save", width=8, command=self.make_selection)

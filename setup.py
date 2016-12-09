@@ -1,5 +1,4 @@
 from distutils.core import setup
-
 import sys
 
 if sys.version_info[:2][0] == 2:

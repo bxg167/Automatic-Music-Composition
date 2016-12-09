@@ -26,6 +26,13 @@ class RCFF(object):
                 rest_count += 1
         # print "beats: " + str(beat_count) + "; rests: " + str(rest_count)
         return beat_count >= rest_count / 2 and beat_count != 0
+    
+    def __str__(self):
+        retval = 'RCFF: [\n'
+        for ts in self.body:
+            retval += '    ' + ts.__str__() + '\n'
+        retval += ']\n'
+        return retval
 
     def pickle(self, file_handler):
         pickle.dump(self, file_handler)
