@@ -1,16 +1,23 @@
+import Tkconstants
 from Tkinter import *
 import os
 
 
 class FolderBrowser(Toplevel):
-    def __init__(self):
+    def __init__(self, starting_directory = ".."):
         self.selection_index = -1
         Toplevel.__init__(self)
 
         self.selection = ""
+        first_row = Frame(self, width=440)
+
+        self.directory_label = Label(first_row)
+        self.directory_label.pack(pady=5, expand=YES, fill=X)
+
+        first_row.pack(fill=X, expand=YES)
 
         menu_frame = Frame(self)
-        self.minsize(width=220, height=200)
+        self.minsize(width=440, height=200)
 
         self.menu = Listbox(menu_frame, height=10, width=30, selectmode=SINGLE)
         self.scrollbar = Scrollbar(menu_frame, orient=VERTICAL)
@@ -31,8 +38,15 @@ class FolderBrowser(Toplevel):
 
         self.add_button()
 
-        self.working_directory = ".."
-        self.fill(self.working_directory)
+        self.working_directory = starting_directory
+
+        self.label_text = StringVar()
+
+        self.label_text.set("Current Directory:\n" + os.path.abspath(self.working_directory))
+
+        self.directory_label.config(textvariable=self.label_text)
+
+        self.reset_selection()
 
     def move_selection(self, movement):
         self.menu.selection_clear(0, END)
@@ -55,10 +69,11 @@ class FolderBrowser(Toplevel):
 
     def explore_folder(self, event):
         self.working_directory = os.path.abspath(os.path.join(self.working_directory, self.menu.selection_get()))
-        self.fill(self.working_directory)
         self.reset_selection()
 
     def reset_selection(self):
+        self.fill(self.working_directory)
+        self.label_text.set("Current Directory:\n" + os.path.abspath(self.working_directory))
         self.selection_index = 0
         self.move_selection(0)
 
