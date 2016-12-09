@@ -8,10 +8,6 @@ from RCFF import RCFF
 
 class ConvertRcffToMidi:
     def __init__(self, rcff_file_path, instrument=0):
-        a = copy_reg.__all__
-        if a is None:
-            print
-
         self.__rcff_file = rcff_file_path
 
         self.__rcff = []
