@@ -3,6 +3,7 @@
 import os
 import sys
 
+
 bundled_coverage_path = os.getenv('BUNDLED_COVERAGE_PATH')
 if bundled_coverage_path:
     sys_path_backup = sys.path

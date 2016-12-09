@@ -173,7 +173,7 @@ class Converter:
         # The time variable indicates the time the song is at after the note has been played (length of note).
         if time != length:
             tick_increment = self.__get_tick_increment__(rcff)
-            num_slices = int(math.ceil(length / tick_increment))
+            num_slices = int(math.ceil(time / tick_increment))
             rcff = self.__create_time_slice__(rcff, num_slices, 0, 0, REST)
 
         return rcff

@@ -31,3 +31,5 @@ class TestRCFF(TestCase):
         timeslice = TimeSlice("pitch", 100, 8)
         rcff.add_time_slice_to_body(timeslice)
         self.assertTrue(rcff.check_for_excessive_rest())
+
+
