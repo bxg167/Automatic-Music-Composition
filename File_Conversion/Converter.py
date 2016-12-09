@@ -1,3 +1,4 @@
+from __future__ import print_function
 import os
 
 import midi
@@ -40,9 +41,9 @@ class Converter:
             # TODO: BUG 1.2
             if new_rcff.check_for_excessive_rest():
                 rcff_files.append(new_rcff)
-                print "RCFF successfully created"
+                print("RCFF successfully created")
             else:
-                print "FAILED: RCFF not generated"
+                print("FAILED: RCFF not generated")
 
         return rcff_files
 
