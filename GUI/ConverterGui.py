@@ -14,6 +14,7 @@ MIN_HEIGHT = 125
 MIN_WIDTH = 260
 
 window = Tk()
+window.wm_title("Converter")
 
 window.geometry("440x" + str(MIN_HEIGHT))
 window.minsize(width=MIN_WIDTH, height=MIN_HEIGHT)

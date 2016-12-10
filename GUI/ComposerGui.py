@@ -16,6 +16,7 @@ MIN_HEIGHT = 125
 MIN_WIDTH = 285
 
 window = Tk()
+window.wm_title("Composer")
 
 window.geometry("440x" + str(MIN_HEIGHT))
 window.minsize(width=MIN_WIDTH, height=MIN_HEIGHT)
